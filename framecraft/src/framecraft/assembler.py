@@ -26,8 +26,9 @@ from framecraft.rendering.llm_author import (
     LLMAuthorError,
     author_scene_html,
 )
+from framecraft.rendering.rich_fallback import render_rich_fallback
 from framecraft.rendering.root import write_root
-from framecraft.schema import Provenance, Scene, SceneGraph
+from framecraft.schema import Provenance, Scene, SceneGraph, StoryBible
 from framecraft.trace import AssemblerSceneTrace
 
 _log = logging.getLogger("framecraft.assembler")
@@ -44,10 +45,12 @@ class Assembler:
         provider: LLMProvider,
         *,
         full_polish: bool = False,
+        bible: StoryBible | None = None,
     ) -> None:
         self.registry = registry
         self.provider = provider
         self.full_polish = full_polish
+        self.bible = bible
         self._polish_cache_hits = 0
         self._polish_cache_misses = 0
 
@@ -204,6 +207,10 @@ class Assembler:
             return cached, 1, 0
 
         if self.full_polish and not isinstance(self.provider, StubProvider):
+            # Thread bible context when available (scene brief + neighbors).
+            scene_brief = self.bible.scene_by_index(scene.index) if self.bible else None
+            prev_brief = self.bible.scene_by_index(scene.index - 1) if self.bible else None
+            next_brief = self.bible.scene_by_index(scene.index + 1) if self.bible else None
             try:
                 html = author_scene_html(
                     self.provider,
@@ -218,11 +225,35 @@ class Assembler:
                         archetype=plan.archetype.value,
                         aspect=plan.brief.aspect.value,
                         style_seed=plan.brief.style_seed,
+                        scene_brief=scene_brief,
+                        prev_scene_brief=prev_brief,
+                        next_scene_brief=next_brief,
+                        bible=self.bible,
                     ),
                 )
                 polish_cache["html"] = html
                 return html, 0, 1
             except LLMAuthorError as e:
+                # If we have a bible scene brief, use the rich-safe fallback
+                # (25+ elements, staggered entry, ambient drift, clean exit)
+                # instead of the one-fade native Python template.
+                if scene_brief is not None:
+                    _log.warning(
+                        "llm_author failed for scene %d (%s): %s — using rich-safe fallback from bible",
+                        scene.index,
+                        scene.block_id.value,
+                        e,
+                    )
+                    rendered = render_rich_fallback(
+                        scene_brief,
+                        block_id=scene.block_id,
+                        canvas_w=w,
+                        canvas_h=h,
+                        duration=scene.duration,
+                        style_seed=plan.brief.style_seed,
+                    )
+                    polish_cache["html"] = rendered
+                    return rendered, 0, 1
                 _log.warning(
                     "llm_author failed for scene %d (%s): %s — falling back to native template",
                     scene.index,

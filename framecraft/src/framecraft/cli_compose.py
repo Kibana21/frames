@@ -30,7 +30,9 @@ from framecraft.schema import (
     Mood,
     Scene,
     SceneGraph,
+    StoryBible,
 )
+from framecraft.story_bible import StoryBibleError, bible_to_plan, build_bible
 
 _console = Console()
 
@@ -224,9 +226,32 @@ def _run_one_variant(
     hf_version = scaffold_fn(out_dir)
     _console.print(f"      hyperframes {hf_version}")
 
+    bible: StoryBible | None = None
     if dry_run:
         _console.print("[2/5] Planning scenes (dry-run: hand-written plan)…")
         plan = _handwritten_plan(brief)
+    elif full_polish:
+        # Story-bible path: write the film plan first, derive the SceneGraph
+        # deterministically from it, skip the Director.
+        _console.print("[2/5] Writing story bible (narrative blueprint)…")
+        try:
+            bible = build_bible(brief, provider_obj)
+        except StoryBibleError as e:
+            raise FrameCraftExit(ExitCode.PROVIDER, f"StoryBible: {e}") from e
+        _console.print(
+            f"      thesis: [italic]{bible.thesis[:90]}{'…' if len(bible.thesis) > 90 else ''}[/italic]"
+        )
+        _console.print(
+            f"      {len(bible.pillars)} pillars · {len(bible.scenes)} scenes · "
+            f"{len(bible.exhibits)} exhibits"
+            + (f" · motif: {bible.motif.id}" if bible.motif else "")
+        )
+        plan = bible_to_plan(bible, brief)
+        # Persist the bible next to the plan for inspection + caching.
+        (out_dir / ".framecraft" / "story-bible.json").parent.mkdir(parents=True, exist_ok=True)
+        (out_dir / ".framecraft" / "story-bible.json").write_text(
+            bible.model_dump_json(indent=2) + "\n", encoding="utf-8"
+        )
     else:
         _console.print("[2/5] Planning scenes via Director…")
         director = Director(provider_obj, registry)
@@ -236,8 +261,11 @@ def _run_one_variant(
             raise FrameCraftExit(ExitCode.PROVIDER, f"Director: {e}") from e
 
     polish_note = " (full-polish)" if full_polish else ""
-    _console.print(f"[3/5] Assembling {len(plan.scenes)} scenes{polish_note}…")
-    assembler = Assembler(registry, provider_obj, full_polish=full_polish)
+    bible_note = " + bible" if bible is not None else ""
+    _console.print(
+        f"[3/5] Assembling {len(plan.scenes)} scenes{polish_note}{bible_note}…"
+    )
+    assembler = Assembler(registry, provider_obj, full_polish=full_polish, bible=bible)
     assembler.assemble(
         plan,
         out_dir,

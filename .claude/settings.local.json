@@ -10,7 +10,8 @@
       "Bash(framecraft compose *)",
       "Bash(python -c \"import json,sys; p=json.load\\(sys.stdin\\); [print\\(f'  scene {s[\\\\\"index\\\\\"]}: {s[\\\\\"block_id\\\\\"]} \\({s[\\\\\"duration\\\\\"]}s\\) props={list\\(s[\\\\\"block_props\\\\\"].keys\\(\\)\\)}'\\) for s in p['scenes']]\")",
       "Bash(framecraft render *)",
-      "Bash(python *)"
+      "Bash(python *)",
+      "Bash(grep -nE \"querySelector|gsap\\\\.to.*\\\\`|gsap\\\\.from.*\\\\`\" /Users/kartik/Documents/Work/Projects/craft/frames/output/aia-gold-max-v5/compositions/scene-04-lower-third.html)"
     ]
   }
 }
