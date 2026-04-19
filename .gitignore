@@ -1,0 +1,29 @@
+# Credentials — never commit
+key.json
+*.json.key
+*credentials*.json
+.env
+.env.*
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.venv/
+.mypy_cache/
+.ruff_cache/
+
+# Test artifacts
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Perf harness output
+.perf/report-*.json
+
+# Framecraft runtime artifacts
+**/.framecraft/
+output/
+

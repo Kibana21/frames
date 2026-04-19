@@ -25,3 +25,5 @@ htmlcov/
 
 # Framecraft runtime artifacts
 **/.framecraft/
+output/
+

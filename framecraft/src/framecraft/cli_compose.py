@@ -87,7 +87,7 @@ def compose(
             music_volume=music_volume,
         )
 
-        out_dir = (out or Path.cwd() / _slug(situation)).resolve()
+        out_dir = (out or Path.cwd() / "output" / _slug(situation)).resolve()
 
         # --- Step 1: scaffold
         _console.print(f"[1/5] Scaffolding at [bold]{out_dir}[/bold]…")
