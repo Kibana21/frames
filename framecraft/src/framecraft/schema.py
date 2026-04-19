@@ -181,6 +181,10 @@ class Brief(BaseModel):
     brand_kit: BrandKit | None = None
     music_path: Path | None = None
     music_volume: float = Field(default=0.4, ge=0, le=1)
+    # Freeform creative directive passed to Director + Author prompts. Used by
+    # --n-variants to produce distinct renditions from the same situation.
+    # Backward-compatible default (None) leaves every prompt unchanged.
+    style_seed: str | None = Field(default=None, max_length=400)
 
 
 class SceneGraph(BaseModel):

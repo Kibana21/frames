@@ -36,6 +36,22 @@ _console = Console()
 
 _SLUG_RE = re.compile(r"[^a-z0-9]+")
 
+# Built-in style palette for --n-variants. Each seed is a short creative
+# directive fed to both Director (block/copy choices) and LLM author
+# (motion/color/type). Keep them short — they ride inside every prompt.
+_DEFAULT_STYLE_SEEDS: list[str] = [
+    "kinetic-bold — oversized type, aggressive letter-by-letter stagger, "
+    "back.out/expo easing, punchy accent bars, high-saturation accent color",
+    "cinematic-slow — restrained motion, slow camera push, held beats, "
+    "gentle power2 easing, subtle vignette or letterbox, muted palette",
+    "editorial-minimal — magazine layout with off-center alignment, "
+    "thin hairlines, tight kerning reveals, monochrome with one accent",
+    "playful-bouncy — back.out(2.5) overshoot, rotation/skew entries, "
+    "rounded shapes, warm palette, confetti or emoji-adjacent flourishes",
+    "technical-precise — grid-based wipes, monospace accents, dashed "
+    "underlines, crisp geometric transitions, cool blues and whites",
+]
+
 
 def compose(
     situation: str = typer.Argument(..., help="One-line situation string."),
@@ -56,6 +72,25 @@ def compose(
     provider: str | None = typer.Option(None, "--provider", envvar="FRAMECRAFT_PROVIDER"),
     no_config: bool = typer.Option(False, "--no-config", help="Skip framecraft.yaml loading."),
     summary: bool = typer.Option(False, "--summary", help="Print token/cost/lint summary after run."),
+    full_polish: bool = typer.Option(
+        False,
+        "--full-polish",
+        help="Let the LLM author each native scene's HTML end-to-end (richer motion, ~10× tokens). Ignored for --dry-run / stub provider.",
+    ),
+    n_variants: int = typer.Option(
+        1,
+        "--n-variants",
+        "-n",
+        min=1,
+        max=10,
+        help="Produce N renditions from the same situation (each in its own vK/ subfolder). Picks from a built-in style palette unless --style-seed is also set.",
+    ),
+    style_seed: str | None = typer.Option(
+        None,
+        "--style-seed",
+        help="Freeform creative directive (overrides the built-in palette). "
+             "Repeat with commas for multi-variant, e.g. 'kinetic-bold,cinematic-slow'.",
+    ),
 ) -> None:
     try:
         # Load framecraft.yaml defaults (CLI args override config).
@@ -75,7 +110,7 @@ def compose(
             except MusicValidationError as e:
                 raise FrameCraftExit(ExitCode.USAGE, str(e)) from e
 
-        brief = Brief(
+        base_brief = Brief(
             situation=situation,
             aspect=aspect,
             duration=duration,
@@ -87,66 +122,57 @@ def compose(
             music_volume=music_volume,
         )
 
-        out_dir = (out or _workspace_root() / "output" / _slug(situation)).resolve()
+        top_dir = (out or _workspace_root() / "output" / _slug(situation)).resolve()
 
-        # --- Step 1: scaffold
-        _console.print(f"[1/5] Scaffolding at [bold]{out_dir}[/bold]…")
-        hf_version = scaffold_fn(out_dir)
-        _console.print(f"      hyperframes {hf_version}")
+        # Resolve style seeds for the variant loop.
+        seeds = _resolve_style_seeds(style_seed, n_variants)
 
-        # --- Step 2: plan
+        # Shared pieces that don't need rebuilding per variant.
         registry = default_registry()
         if dry_run:
-            _console.print("[2/5] Planning scenes (dry-run: hand-written plan)…")
-            plan = _handwritten_plan(brief)
             provider_obj = _m0_stub_provider()
         else:
-            _console.print("[2/5] Planning scenes via Director…")
             try:
                 provider_obj = make_provider(provider)
             except ProviderError as e:
                 raise FrameCraftExit(ExitCode.USAGE, str(e)) from e
-            director = Director(provider_obj, registry)
-            try:
-                plan = director.plan(brief, out_dir=out_dir)
-            except DirectorError as e:
-                raise FrameCraftExit(ExitCode.PROVIDER, f"Director: {e}") from e
 
-        # --- Step 3: assemble
-        _console.print(f"[3/5] Assembling {len(plan.scenes)} scenes…")
-        assembler = Assembler(registry, provider_obj)
-        assembler.assemble(
-            plan,
-            out_dir,
-            project_name=situation[:60],
-            project_id=_slug(situation)[:40] or "framecraft-project",
-        )
+        if n_variants > 1:
+            _console.print(
+                f"[bold]Producing {n_variants} variants[/bold] of "
+                f"[italic]{situation[:80]}[/italic]"
+            )
 
-        # --- Step 4: lint-repair
-        _console.print("[4/5] Linting + repair…")
-        try:
-            result = lint_repair(out_dir, assembler, plan)
-            if result.repaired:
-                _console.print("      repaired 1 pass")
-        except (FrameCraftBugError, LintFailedAfterRepairError) as e:
-            raise FrameCraftExit(e.code, e.message) from e
+        for variant_idx in range(n_variants):
+            seed = seeds[variant_idx]
+            brief = base_brief.model_copy(update={"style_seed": seed})
+            variant_dir = (
+                top_dir if n_variants == 1 else top_dir / f"v{variant_idx + 1}"
+            )
+            if n_variants > 1:
+                _console.print()
+                _console.print(
+                    f"[bold cyan]── variant {variant_idx + 1}/{n_variants} ──[/bold cyan]"
+                )
+                if seed:
+                    _console.print(f"  style_seed: {seed[:100]}…" if len(seed) > 100 else f"  style_seed: {seed}")
 
-        # --- Step 5: render
-        if render:
-            _console.print("[5/5] Rendering…")
-            invoke_render(out=out_dir)
-        else:
-            _console.print("[5/5] Done (use --render to generate MP4).")
+            _run_one_variant(
+                brief=brief,
+                out_dir=variant_dir,
+                registry=registry,
+                provider_obj=provider_obj,
+                dry_run=dry_run,
+                full_polish=full_polish,
+                render=render,
+                summary=summary,
+                situation=situation,
+            )
 
-        # --- Summary
-        show_summary = summary or sys.stdout.isatty()
-        if show_summary:
-            _print_summary(out_dir, result)
-
-        _console.print()
-        _console.print("[green]✓ Done.[/green]")
-        _console.print(f"  plan: {out_dir / 'plan.json'}")
-        _console.print(f"  root: {out_dir / 'index.html'}")
+        if n_variants > 1:
+            _console.print()
+            _console.print(f"[green]✓ All {n_variants} variants done.[/green] "
+                          f"Compare under [bold]{top_dir}[/bold]/v1…v{n_variants}/")
 
     except ToolchainError as e:
         _fatal(e.message, code=e.code)
@@ -156,6 +182,91 @@ def compose(
         _fatal(str(e), code=int(ExitCode.PROVIDER))
     except Exception as e:
         _fatal(f"unexpected: {e}", code=int(ExitCode.USAGE))
+
+
+def _resolve_style_seeds(user_seed: str | None, n: int) -> list[str | None]:
+    """Pick the list of N style seeds for this run.
+
+    Rules:
+      - n == 1 and no user seed  → [None]  (backward-compatible)
+      - user seed (comma-split)  → respect it; pad with built-ins; truncate to N
+      - otherwise                → first N from the built-in palette (wrapped)
+    """
+    if user_seed:
+        parts = [s.strip() for s in user_seed.split(",") if s.strip()]
+        seeds: list[str | None] = list(parts)
+        # Pad from the built-in palette if user supplied fewer than N.
+        i = 0
+        while len(seeds) < n:
+            seeds.append(_DEFAULT_STYLE_SEEDS[i % len(_DEFAULT_STYLE_SEEDS)])
+            i += 1
+        return seeds[:n]
+
+    if n == 1:
+        return [None]
+    return [_DEFAULT_STYLE_SEEDS[i % len(_DEFAULT_STYLE_SEEDS)] for i in range(n)]
+
+
+def _run_one_variant(
+    *,
+    brief: Brief,
+    out_dir: Path,
+    registry,
+    provider_obj,
+    dry_run: bool,
+    full_polish: bool,
+    render: bool,
+    summary: bool,
+    situation: str,
+) -> None:
+    """One full compose pipeline (scaffold → plan → assemble → lint → render)."""
+    _console.print(f"[1/5] Scaffolding at [bold]{out_dir}[/bold]…")
+    hf_version = scaffold_fn(out_dir)
+    _console.print(f"      hyperframes {hf_version}")
+
+    if dry_run:
+        _console.print("[2/5] Planning scenes (dry-run: hand-written plan)…")
+        plan = _handwritten_plan(brief)
+    else:
+        _console.print("[2/5] Planning scenes via Director…")
+        director = Director(provider_obj, registry)
+        try:
+            plan = director.plan(brief, out_dir=out_dir)
+        except DirectorError as e:
+            raise FrameCraftExit(ExitCode.PROVIDER, f"Director: {e}") from e
+
+    polish_note = " (full-polish)" if full_polish else ""
+    _console.print(f"[3/5] Assembling {len(plan.scenes)} scenes{polish_note}…")
+    assembler = Assembler(registry, provider_obj, full_polish=full_polish)
+    assembler.assemble(
+        plan,
+        out_dir,
+        project_name=situation[:60],
+        project_id=_slug(situation)[:40] or "framecraft-project",
+    )
+
+    _console.print("[4/5] Linting + repair…")
+    try:
+        result = lint_repair(out_dir, assembler, plan)
+        if result.repaired:
+            _console.print("      repaired 1 pass")
+    except (FrameCraftBugError, LintFailedAfterRepairError) as e:
+        raise FrameCraftExit(e.code, e.message) from e
+
+    if render:
+        _console.print("[5/5] Rendering…")
+        invoke_render(out=out_dir)
+    else:
+        _console.print("[5/5] Done (use --render to generate MP4).")
+
+    show_summary = summary or sys.stdout.isatty()
+    if show_summary:
+        _print_summary(out_dir, result)
+
+    _console.print()
+    _console.print("[green]✓ Done.[/green]")
+    _console.print(f"  plan: {out_dir / 'plan.json'}")
+    _console.print(f"  root: {out_dir / 'index.html'}")
 
 
 def _m0_stub_provider():

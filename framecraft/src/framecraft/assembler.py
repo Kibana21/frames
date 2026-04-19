@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import logging
 import time
 from datetime import datetime, timezone
 from pathlib import Path
@@ -10,6 +11,7 @@ from pathlib import Path
 from pydantic import Field
 
 from framecraft.providers.base import LLMProvider
+from framecraft.providers.stub import StubProvider
 from framecraft.registry import BlockRegistry
 from framecraft.rendering.audio import copy_audio_asset
 from framecraft.rendering.catalog import (
@@ -19,9 +21,16 @@ from framecraft.rendering.catalog import (
     install_catalog_block,
 )
 from framecraft.rendering.ids import file_name
+from framecraft.rendering.llm_author import (
+    AuthorRequest,
+    LLMAuthorError,
+    author_scene_html,
+)
 from framecraft.rendering.root import write_root
 from framecraft.schema import Provenance, Scene, SceneGraph
 from framecraft.trace import AssemblerSceneTrace
+
+_log = logging.getLogger("framecraft.assembler")
 
 __all__ = ["Assembler"]
 
@@ -29,9 +38,16 @@ _SceneTrace = AssemblerSceneTrace  # backward-compat alias
 
 
 class Assembler:
-    def __init__(self, registry: BlockRegistry, provider: LLMProvider) -> None:
+    def __init__(
+        self,
+        registry: BlockRegistry,
+        provider: LLMProvider,
+        *,
+        full_polish: bool = False,
+    ) -> None:
         self.registry = registry
         self.provider = provider
+        self.full_polish = full_polish
         self._polish_cache_hits = 0
         self._polish_cache_misses = 0
 
@@ -68,8 +84,9 @@ class Assembler:
 
             if spec.provenance is Provenance.NATIVE:
                 assert spec.template is not None
-                rendered = spec.template(scene.block_props, scene.index, w, h, scene.duration)
-                hits, misses = 0, 0
+                rendered, hits, misses = self._render_native(
+                    scene, spec, plan, polish_cache, w, h
+                )
             else:
                 installed_path = self._catalog_primary(spec, out_dir)
                 installed_html = installed_path.read_text(encoding="utf-8")
@@ -164,6 +181,57 @@ class Assembler:
         )
 
     # --- helpers -------------------------------------------------------------
+
+    def _render_native(
+        self,
+        scene: Scene,
+        spec,
+        plan: SceneGraph,
+        polish_cache: dict[str, str],
+        w: int,
+        h: int,
+    ) -> tuple[str, int, int]:
+        """Render a native block. Returns (html, cache_hits, cache_misses).
+
+        Routing:
+          1. `polish_cache["html"]` hit → reuse (1 hit, 0 miss).
+          2. `full_polish=True` + real provider → LLM-author; cache on success
+             (0 hit, 1 miss). On validation failure, fall back to native.
+          3. Otherwise → Python template (0, 0).
+        """
+        cached = polish_cache.get("html")
+        if cached:
+            return cached, 1, 0
+
+        if self.full_polish and not isinstance(self.provider, StubProvider):
+            try:
+                html = author_scene_html(
+                    self.provider,
+                    AuthorRequest(
+                        scene_index=scene.index,
+                        block_id=scene.block_id,
+                        props=scene.block_props,
+                        duration=scene.duration,
+                        canvas_w=w,
+                        canvas_h=h,
+                        mood=plan.brief.mood.value if plan.brief.mood else None,
+                        archetype=plan.archetype.value,
+                        aspect=plan.brief.aspect.value,
+                        style_seed=plan.brief.style_seed,
+                    ),
+                )
+                polish_cache["html"] = html
+                return html, 0, 1
+            except LLMAuthorError as e:
+                _log.warning(
+                    "llm_author failed for scene %d (%s): %s — falling back to native template",
+                    scene.index,
+                    scene.block_id.value,
+                    e,
+                )
+
+        rendered = spec.template(scene.block_props, scene.index, w, h, scene.duration)
+        return rendered, 0, 0
 
     def _install_catalog_blocks(self, plan: SceneGraph, out_dir: Path) -> None:
         seen: set[str] = set()
