@@ -1,0 +1,450 @@
+<template id="scene-03-lower-third-template">
+    <div data-composition-id="scene-03-lower-third" data-start="0" data-width="1920" data-height="1080" data-duration="5.000">
+        <style>
+            [data-composition-id="scene-03-lower-third"] {
+                --red: #D31145;
+                --dark-red: #A80E37;
+                --pink-soft: #F5DDE0;
+                --beige: #E8D9C5;
+                --orange: #E86C29;
+                --cream: #FAF4EE;
+                --ink: #1A1A1A;
+                --grey: #D0D0D0;
+                background-color: var(--cream);
+                font-family: "Inter", sans-serif;
+                color: var(--ink);
+                overflow: hidden;
+            }
+
+            [data-composition-id="scene-03-lower-third"] .root-camera {
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                transform-style: preserve-3d;
+                perspective: 1800px;
+            }
+
+            /* ATMOSPHERICS */
+            [data-composition-id="scene-03-lower-third"] .grain-overlay {
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                opacity: 0.08;
+                pointer-events: none;
+            }
+
+            [data-composition-id="scene-03-lower-third"] .orb {
+                position: absolute;
+                border-radius: 50%;
+                mix-blend-mode: multiply;
+                opacity: 0.5;
+            }
+
+            [data-composition-id="scene-03-lower-third"] .orb-a {
+                width: 800px;
+                height: 800px;
+                background-color: var(--pink-soft);
+                bottom: -200px;
+                left: -250px;
+                filter: blur(80px);
+            }
+
+            [data-composition-id="scene-03-lower-third"] .orb-b {
+                width: 600px;
+                height: 600px;
+                background-color: var(--beige);
+                top: -150px;
+                right: -200px;
+                filter: blur(60px);
+            }
+
+            [data-composition-id="scene-03-lower-third"] .vignette {
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                background: radial-gradient(ellipse at center, transparent 50%, rgba(0, 0, 0, 1) 100%);
+                opacity: 0.15;
+                pointer-events: none;
+            }
+
+            /* HEADLINE */
+            [data-composition-id="scene-03-lower-third"] .headline-group {
+                position: absolute;
+                top: 120px;
+                left: 100px;
+                width: 700px;
+            }
+
+            [data-composition-id="scene-03-lower-third"] .eyebrow-label {
+                font-size: 18px;
+                font-weight: 600;
+                letter-spacing: 0.1em;
+                text-transform: uppercase;
+                color: var(--red);
+                margin-bottom: 8px;
+            }
+            
+            [data-composition-id="scene-03-lower-third"] .headline-accent-bar {
+                width: 96px;
+                height: 4px;
+                background-color: var(--red);
+                transform-origin: left;
+                margin-bottom: 16px;
+            }
+
+            [data-composition-id="scene-03-lower-third"] .headline {
+                font-size: 72px;
+                font-weight: 800;
+                line-height: 1.1;
+                letter-spacing: -0.02em;
+            }
+
+            [data-composition-id="scene-03-lower-third"] .char-wrap {
+                display: inline-block;
+                overflow: hidden;
+            }
+
+            [data-composition-id="scene-03-lower-third"] .char {
+                display: inline-block;
+                transform: translateY(100%);
+            }
+
+            /* SHIELD */
+            [data-composition-id="scene-03-lower-third"] .shield-container {
+                position: absolute;
+                top: 120px;
+                right: 120px;
+                width: 150px;
+                height: 150px;
+            }
+
+            [data-composition-id="scene-03-lower-third"] .shield-motif {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                width: 100px;
+                height: 120px;
+                fill: none;
+                stroke: var(--red);
+                stroke-width: 6px;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+            }
+
+            [data-composition-id="scene-03-lower-third"] .shield-pulse-ring {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                width: 100px;
+                height: 100px;
+                border: 2px solid var(--red);
+                border-radius: 50%;
+                transform: translate(-50%, -50%);
+            }
+
+            /* STAT GRID */
+            [data-composition-id="scene-03-lower-third"] .stat-grid {
+                position: absolute;
+                bottom: 80px;
+                left: 50%;
+                transform: translateX(-50%);
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 30px;
+                width: 1600px;
+                transform-style: preserve-3d;
+            }
+
+            [data-composition-id="scene-03-lower-third"] .stat-card {
+                background-color: #FFFFFF;
+                border-radius: 16px;
+                padding: 24px 32px;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+                text-align: left;
+                position: relative;
+                overflow: hidden;
+            }
+            [data-composition-id="scene-03-lower-third"] .card-accent-top {
+                position: absolute;
+                top: 0;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 80px;
+                height: 6px;
+                background: var(--beige);
+                opacity: 0.8;
+                border-radius: 4px;
+                transform-origin: center;
+            }
+
+            [data-composition-id="scene-03-lower-third"] .stat-value {
+                font-size: 100px;
+                font-weight: 800;
+                color: var(--red);
+                line-height: 1;
+                margin-bottom: 8px;
+                font-synthesis: none; /* Prevent faux bolding */
+            }
+            
+            [data-composition-id="scene-03-lower-third"] .stat-value-swell {
+                display: inline-block;
+                font-variation-settings: "wght" 300;
+            }
+
+            [data-composition-id="scene-03-lower-third"] .stat-label {
+                font-size: 22px;
+                font-weight: 500;
+                line-height: 1.3;
+                min-height: 58px; /* 2 lines */
+            }
+
+            [data-composition-id="scene-03-lower-third"] .stat-chip {
+                position: absolute;
+                bottom: 24px;
+                right: 24px;
+                background-color: var(--orange);
+                color: white;
+                padding: 6px 12px;
+                border-radius: 20px;
+                font-size: 14px;
+                font-weight: 700;
+                letter-spacing: 0.05em;
+            }
+            
+            [data-composition-id="scene-03-lower-third"] .light-sweep {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(105deg, transparent 35%, rgba(255,255,255,0.6) 50%, transparent 65%);
+                mix-blend-mode: overlay;
+                pointer-events: none;
+            }
+            
+            /* EXIT PARTICLES */
+            [data-composition-id="scene-03-lower-third"] .particle-container {
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                pointer-events: none;
+                opacity: 0;
+            }
+            [data-composition-id="scene-03-lower-third"] .particle {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                width: 8px;
+                height: 8px;
+                background: var(--red);
+                border-radius: 50%;
+            }
+
+        </style>
+
+        <div class="root-camera clip" data-track-index="1" data-start="0" data-duration="5.000">
+            <!-- ATMOSPHERICS -->
+            <svg class="grain-overlay clip" data-track-index="2" data-start="0" data-duration="5.000">
+                <filter id="grainy">
+                    <feTurbulence type="turbulence" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/>
+                </filter>
+                <rect width="100%" height="100%" filter="url(#grainy)"/>
+            </svg>
+            <div class="orb orb-a clip" data-track-index="3" data-start="0" data-duration="5.000"></div>
+            <div class="orb orb-b clip" data-track-index="4" data-start="0" data-duration="5.000"></div>
+            <div class="vignette clip" data-track-index="5" data-start="0" data-duration="5.000"></div>
+
+            <!-- CONTENT -->
+            <div class="headline-group">
+                <div class="eyebrow-label clip" data-track-index="10" data-start="0.3" data-duration="4.0">AIA HEALTH SHIELD GOLD MAX</div>
+                <div class="headline-accent-bar clip" data-track-index="11" data-start="0.4" data-duration="0.6"></div>
+                <h1 class="headline clip" data-track-index="12" data-start="0.4" data-duration="4.0">
+                    <span class="char-wrap"><span class="char">P</span></span><span class="char-wrap"><span class="char">r</span></span><span class="char-wrap"><span class="char">o</span></span><span class="char-wrap"><span class="char">t</span></span><span class="char-wrap"><span class="char">e</span></span><span class="char-wrap"><span class="char">c</span></span><span class="char-wrap"><span class="char">t</span></span><span class="char-wrap"><span class="char">i</span></span><span class="char-wrap"><span class="char">o</span></span><span class="char-wrap"><span class="char">n</span></span><span class="char-wrap"><span class="char">&nbsp;</span></span><span class="char-wrap"><span class="char">t</span></span><span class="char-wrap"><span class="char">h</span></span><span class="char-wrap"><span class="char">a</span></span><span class="char-wrap"><span class="char">t</span></span><span class="char-wrap"><span class="char">&nbsp;</span></span><span class="char-wrap"><span class="char">a</span></span><span class="char-wrap"><span class="char">d</span></span><span class="char-wrap"><span class="char">d</span></span><span class="char-wrap"><span class="char">s</span></span><span class="char-wrap"><span class="char">&nbsp;</span></span><span class="char-wrap"><span class="char">u</span></span><span class="char-wrap"><span class="char">p</span></span><span class="char-wrap"><span class="char">.</span></span>
+                </h1>
+            </div>
+
+            <div class="shield-container">
+                <svg class="shield-motif clip" data-track-index="13" data-start="1.8" data-duration="3.0" viewBox="0 0 100 120">
+                    <path d="M50 0 L95 20 L95 70 Q95 110 50 120 Q5 110 5 70 L5 20 Z"/>
+                </svg>
+                <div class="shield-pulse-ring clip" data-track-index="14" data-start="2.6" data-duration="1.2"></div>
+                <div class="shield-pulse-ring clip" data-track-index="15" data-start="3.0" data-duration="1.2"></div>
+                <div class="shield-pulse-ring clip" data-track-index="16" data-start="3.4" data-duration="1.2"></div>
+            </div>
+
+            <div class="stat-grid">
+                <!-- Card 1 -->
+                <div class="stat-card clip" data-track-index="20" data-start="0.2" data-duration="4.0">
+                    <div class="card-accent-top"></div>
+                    <div class="stat-value clip" data-track-index="21" data-start="1.0" data-duration="1.0"><span class="stat-value-swell">S$2M</span></div>
+                    <div class="stat-label clip" data-track-index="22" data-start="1.1" data-duration="1.0">Annual Limit</div>
+                    <div class="light-sweep"></div>
+                </div>
+                <!-- Card 2 -->
+                <div class="stat-card clip" data-track-index="23" data-start="0.32" data-duration="3.88">
+                    <div class="card-accent-top"></div>
+                    <div class="stat-value clip" data-track-index="24" data-start="1.12" data-duration="1.0">0%</div>
+                    <div class="stat-label clip" data-track-index="25" data-start="1.22" data-duration="1.0">Coverage with Max VitalHealth A</div>
+                    <div class="stat-chip clip" data-track-index="26" data-start="1.6" data-duration="1.0">ZERO CO-INSURANCE</div>
+                    <div class="light-sweep"></div>
+                </div>
+                <!-- Card 3 -->
+                <div class="stat-card clip" data-track-index="27" data-start="0.44" data-duration="3.76">
+                    <div class="card-accent-top"></div>
+                    <div class="stat-value clip" data-track-index="28" data-start="1.24" data-duration="1.0">0</div>
+                    <div class="stat-label clip" data-track-index="29" data-start="1.34" data-duration="1.0">Months Pre/Post Care</div>
+                    <div class="light-sweep"></div>
+                </div>
+                <!-- Card 4 -->
+                <div class="stat-card clip" data-track-index="30" data-start="0.56" data-duration="3.64">
+                    <div class="card-accent-top"></div>
+                    <div class="stat-value clip" data-track-index="31" data-start="1.36" data-duration="1.0"><span class="stat-value-swell">380+</span></div>
+                    <div class="stat-label clip" data-track-index="32" data-start="1.46" data-duration="1.0">AQHP Specialists</div>
+                    <div class="light-sweep"></div>
+                </div>
+            </div>
+            
+            <div class="particle-container clip" data-track-index="70" data-start="4.2" data-duration="0.8">
+                <!-- 50 particles -->
+                <div class="particle"></div><div class="particle"></div><div class="particle"></div><div class="particle"></div><div class="particle"></div><div class="particle"></div><div class="particle"></div><div class="particle"></div><div class="particle"></div><div class="particle"></div><div class="particle"></div><div class="particle"></div><div class="particle"></div><div class="particle"></div><div class="particle"></div><div class="particle"></div><div class="particle"></div><div class="particle"></div><div class="particle"></div><div class="particle"></div><div class="particle"></div><div class="particle"></div><div class="particle"></div><div class="particle"></div><div class="particle"></div><div class="particle"></div><div class="particle"></div><div class="particle"></div><div class="particle"></div><div class="particle"></div><div class="particle"></div><div class="particle"></div><div class="particle"></div><div class="particle"></div><div class="particle"></div><div class="particle"></div><div class="particle"></div><div class="particle"></div><div class="particle"></div><div class="particle"></div><div class="particle"></div><div class="particle"></div><div class="particle"></div><div class="particle"></div><div class="particle"></div><div class="particle"></div><div class="particle"></div><div class="particle"></div><div class="particle"></div>
+            </div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+        <script>
+            (function () {
+                const DURATION = 5.000;
+                const scope = '[data-composition-id="scene-03-lower-third"]';
+                const tl = gsap.timeline({ paused: true });
+
+                // --- Camera & Atmosphere ---
+                const atmosphereTl = gsap.timeline();
+                const cycle = DURATION;
+                const loops = Math.floor(DURATION / cycle);
+
+                gsap.set(scope, { autoAlpha: 1 });
+                tl.to(scope + ' .root-camera', { scale: 1.05, duration: DURATION, ease: 'sine.inOut' }, 0);
+
+                atmosphereTl
+                    .to(scope + ' .grain-overlay', { opacity: 0.1, duration: cycle / 2, ease: 'sine.inOut', yoyo: true, repeat: loops > 0 ? loops * 2 - 1 : 0 }, 0)
+                    .to(scope + ' .orb-a', { x: '+=80', y: '-=40', scale: 1.1, duration: cycle, ease: 'sine.inOut' }, 0)
+                    .to(scope + ' .orb-b', { x: '-=60', y: '+=50', scale: 0.9, duration: cycle, ease: 'sine.inOut' }, 0)
+                    .to(scope + ' .vignette', { opacity: 0.25, duration: cycle / 2, ease: 'sine.inOut', yoyo: true, repeat: loops > 0 ? loops * 2 - 1 : 0 }, 0);
+
+                // --- Entry Animation ---
+                const entryTl = gsap.timeline();
+                const statCards = gsap.utils.toArray(scope + ' .stat-card');
+                const headlineChars = gsap.utils.toArray(scope + ' .headline .char');
+
+                entryTl
+                    .from(scope + ' .eyebrow-label', { autoAlpha: 0, y: -20, ease: 'power3.out', duration: 0.6 }, 0)
+                    .from(scope + ' .headline-accent-bar', { scaleX: 0, ease: 'power3.out', duration: 0.8 }, 0.1)
+                    .from(headlineChars, { yPercent: 100, stagger: 0.03, ease: 'power3.out', duration: 0.8 }, 0.1)
+                    // SIGNATURE MOMENT: Stat-card cascade
+                    .from(statCards, {
+                        z: -600,
+                        y: 250,
+                        autoAlpha: 0,
+                        stagger: 0.12,
+                        ease: 'back.out(1.6)',
+                        duration: 1.2,
+                        onStart: function() {
+                            // Add chromatic aberration effect on impact
+                            gsap.fromTo(this.targets(), 
+                                { filter: 'blur(2px)', x: '+=5', y: '+=5', textShadow: '3px 3px 0px rgba(255,0,0,0.5), -3px -3px 0px rgba(0,255,255,0.5)' },
+                                { filter: 'blur(0px)', x: '-=5', y: '-=5', textShadow: '0px 0px 0px rgba(255,0,0,0), 0px 0px 0px rgba(0,255,255,0)', duration: 0.4, ease: 'power2.out', delay: 0.8 }
+                            );
+                        }
+                    }, 0);
+
+                // Number counters and label reveals
+                const countersTl = gsap.timeline();
+                const val100 = { val: 0 };
+                countersTl.to(val100, { val: 100, roundProps: "val", duration: 0.8, ease: 'power3.out', onUpdate: () => { document.querySelector(scope + ' [data-track-index="24"]').textContent = val100.val + '%'; } }, 0);
+                const val13 = { val: 0 };
+                countersTl.to(val13, { val: 13, roundProps: "val", duration: 0.8, ease: 'power3.out', onUpdate: () => { document.querySelector(scope + ' [data-track-index="28"]').textContent = val13.val; } }, 0.1);
+                
+                // Original tweens for non-counting numbers are replaced by the new variable-weight swell below
+                countersTl
+                    .from(gsap.utils.toArray(scope + ' .stat-label'), { autoAlpha: 0, y: 15, stagger: 0.1, ease: 'power3.out', duration: 0.6 }, 0.2)
+                    .from(scope + ' .stat-chip', { scale: 0, autoAlpha: 0, ease: 'back.out(1.8)', duration: 0.5 }, 0.6);
+
+                entryTl.add(countersTl, 1.0);
+                
+                // --- NEW: Stat Card Polish ---
+                const cardPolishTl = gsap.timeline();
+                cardPolishTl
+                    .from(scope + ' .card-accent-top', { scaleX: 0, duration: 0.7, ease: 'power3.out', stagger: 0.12 }, 0)
+                    .fromTo(scope + ' .stat-value-swell', 
+                        { fontVariationSettings: "'wght' 300", autoAlpha: 0 }, 
+                        { fontVariationSettings: "'wght' 800", autoAlpha: 1, duration: 0.9, ease: 'power3.out', stagger: 0.2 }, 0);
+
+                const lightSweepCycle = 3.5;
+                const lightSweepLoops = Math.floor((DURATION - 1.8) / lightSweepCycle);
+                const lightSweepTl = gsap.timeline({ repeat: lightSweepLoops > 0 ? lightSweepLoops - 1 : 0 });
+                lightSweepTl.fromTo(scope + ' .light-sweep',
+                    { x: '-150%' },
+                    { x: '150%', duration: lightSweepCycle, ease: 'none', stagger: { amount: 1.2, from: 'start' } }
+                );
+
+                // --- Shield Motif ---
+                const motifTl = gsap.timeline();
+                const shieldPath = document.querySelector(scope + ' .shield-motif path');
+                const pathLength = shieldPath.getTotalLength();
+                const pulseRings = gsap.utils.toArray(scope + ' .shield-pulse-ring');
+
+                motifTl
+                    .set(shieldPath, { strokeDasharray: pathLength, strokeDashoffset: pathLength })
+                    .to(shieldPath, { strokeDashoffset: 0, ease: 'power3.out', duration: 1.0 })
+                    .fromTo(pulseRings,
+                        { scale: 1, autoAlpha: 0.7 },
+                        {
+                            scale: 2.5,
+                            autoAlpha: 0,
+                            stagger: 0.5,
+                            duration: 1.5,
+                            ease: 'power2.out',
+                            repeat: 1,
+                        },
+                        '-=0.2');
+
+                // --- Exit Animation ---
+                const exitTl = gsap.timeline();
+                const particles = gsap.utils.toArray(scope + ' .particle');
+                const contentToHide = [
+                    scope + ' .headline-group',
+                    scope + ' .shield-container',
+                    scope + ' .stat-grid'
+                ];
+
+                exitTl
+                    .to(contentToHide, { autoAlpha: 0, duration: 0.3, ease: 'power2.in' }, 0)
+                    .set(scope + ' .particle-container', { autoAlpha: 1 }, 0.1)
+                    .from(particles, {
+                        x: () => gsap.utils.random(-800, 800),
+                        y: () => gsap.utils.random(-500, 500),
+                        scale: () => gsap.utils.random(0.5, 2),
+                        autoAlpha: 0,
+                        duration: 0.8,
+                        stagger: {
+                            amount: 0.3,
+                            from: 'random'
+                        },
+                        ease: 'power3.in'
+                    }, 0.1);
+
+                // --- Main Timeline Assembly ---
+                tl.add(atmosphereTl, 0)
+                  .add(entryTl, 0.2)
+                  .add(cardPolishTl, 1.4) // Add polish after cards start landing
+                  .add(lightSweepTl, 1.8) // Add continuous sweep during hold
+                  .add(motifTl, 1.8)
+                  .add(exitTl, 4.2);
+
+                window.__timelines = window.__timelines || {};
+                window.__timelines["scene-03-lower-third"] = tl;
+            })();
+        </script>
+    </div>
+</template>

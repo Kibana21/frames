@@ -1,0 +1,132 @@
+<template id="scene-02-lower-third-template">
+  <div data-composition-id="scene-02-lower-third" data-start="0" data-width="1920" data-height="1080" data-duration="4.500">
+    <div class="rf-atmosphere clip" data-start="0" data-duration="4.500" data-track-index="1"></div>
+    <div class="rf-orb rf-orb-a clip" data-start="0" data-duration="4.500" data-track-index="8"></div>
+    <div class="rf-orb rf-orb-b clip" data-start="0" data-duration="4.500" data-track-index="9"></div>
+    <div class="rf-grain clip" data-start="0" data-duration="4.500" data-track-index="2"></div>
+    <div class="rf-vignette clip" data-start="0" data-duration="4.500" data-track-index="10"></div>
+    <div class="rf-content">
+      
+      <h1 class="rf-headline clip" data-start="0.35" data-duration="3.750" data-track-index="4">Go cashless with Max VitalHealth.</h1>
+
+      <div class="rf-body clip" data-start="0.7" data-duration="3.400" data-track-index="13">Add the rider to cover your deductible and co-insurance for zero out-of-pocket expenses.</div>
+
+
+
+    </div>
+    <style>
+      :root{--bg:#FAF4EE;--ink:#1A1A1A;--accent:#D31145;--accent-soft:#F5DDE0;--muted:#6A6A6A;--rule:#D0D0D0}
+      [data-composition-id="scene-02-lower-third"] {
+        position: relative; width: 1920px; height: 1080px;
+        background: var(--bg); color: var(--ink);
+        font-family: "Inter", sans-serif; overflow: hidden;
+      }
+      [data-composition-id="scene-02-lower-third"] .rf-atmosphere {
+        position: absolute; inset: 0;
+        background: radial-gradient(ellipse at 30% 20%, var(--accent-soft) 0%, transparent 55%),
+                    radial-gradient(ellipse at 75% 80%, var(--accent-soft) 0%, transparent 50%),
+                    var(--bg);
+        transform-origin: 50% 50%;
+      }
+      [data-composition-id="scene-02-lower-third"] .rf-orb {
+        position: absolute; width: 780px; height: 780px; border-radius: 50%;
+        filter: blur(60px); opacity: 0.28;
+      }
+      [data-composition-id="scene-02-lower-third"] .rf-orb-a {
+        background: var(--accent); top: -240px; left: -260px;
+      }
+      [data-composition-id="scene-02-lower-third"] .rf-orb-b {
+        background: var(--accent); bottom: -260px; right: -280px; opacity: 0.18;
+      }
+      [data-composition-id="scene-02-lower-third"] .rf-grain {
+        position: absolute; inset: -5%;
+        background-image: radial-gradient(circle, rgba(0,0,0,0.03) 1px, transparent 1px);
+        background-size: 3px 3px; opacity: 0.35; mix-blend-mode: multiply;
+      }
+      [data-composition-id="scene-02-lower-third"] .rf-vignette {
+        position: absolute; inset: 0;
+        background: radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,0.18) 100%);
+      }
+      [data-composition-id="scene-02-lower-third"] .rf-content {
+        position: absolute; left: 120px; right: 120px; top: 50%;
+        transform: translateY(-50%);
+        display: flex; flex-direction: column; gap: 28px;
+      }
+      [data-composition-id="scene-02-lower-third"] .rf-eyebrow-wrap {
+        display: flex; align-items: center; gap: 14px;
+      }
+      [data-composition-id="scene-02-lower-third"] .rf-eyebrow-tick {
+        display: inline-block; width: 40px; height: 3px; background: var(--accent);
+      }
+      [data-composition-id="scene-02-lower-third"] .rf-eyebrow {
+        font-size: 22px; font-weight: 700; letter-spacing: 0.18em;
+        text-transform: uppercase; color: var(--accent);
+      }
+      [data-composition-id="scene-02-lower-third"] .rf-headline {
+        font-size: 112px; font-weight: 800; line-height: 1.02;
+        letter-spacing: -0.025em; margin: 0; max-width: 1500px; color: var(--ink);
+      }
+      [data-composition-id="scene-02-lower-third"] .rf-subhead {
+        font-size: 34px; font-weight: 600; color: var(--ink); max-width: 1400px; margin: 0;
+      }
+      [data-composition-id="scene-02-lower-third"] .rf-body {
+        font-size: 26px; line-height: 1.45; color: var(--muted); max-width: 1200px; margin: 0;
+      }
+      [data-composition-id="scene-02-lower-third"] .rf-tagline {
+        font-size: 30px; font-weight: 600; color: var(--accent); letter-spacing: 0.02em; margin: 0;
+      }
+      [data-composition-id="scene-02-lower-third"] .rf-cta {
+        font-size: 24px; font-weight: 700; color: var(--ink);
+        padding: 14px 28px; border: 2px solid var(--accent); border-radius: 999px;
+        align-self: flex-start;
+      }
+      [data-composition-id="scene-02-lower-third"] .rf-bullets {
+        list-style: none; margin: 4px 0 0 0; padding: 0;
+        display: flex; flex-direction: column; gap: 14px;
+      }
+      [data-composition-id="scene-02-lower-third"] .rf-bullet {
+        display: flex; align-items: center; gap: 18px;
+        font-size: 26px; color: var(--ink);
+      }
+      [data-composition-id="scene-02-lower-third"] .rf-bullet-dot {
+        display: inline-block; width: 12px; height: 12px; border-radius: 50%;
+        background: var(--accent); flex-shrink: 0;
+      }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      (function() {
+        window.__timelines = window.__timelines || {};
+        const compId = "scene-02-lower-third";
+        const scope = '[data-composition-id="scene-02-lower-third"]';
+        const tl = gsap.timeline({ paused: true });
+
+        // Atmospheric — camera push + slow orb drift
+        const atmTl = gsap.timeline();
+        atmTl.to(scope + ' .rf-atmosphere', { scale: 1.05, duration: 4.500, ease: 'sine.inOut' }, 0);
+        atmTl.fromTo(scope + ' .rf-orb-a', { x: 0, y: 0 }, { x: 40, y: 30, duration: 4.500, ease: 'sine.inOut' }, 0);
+        atmTl.fromTo(scope + ' .rf-orb-b', { x: 0, y: 0 }, { x: -40, y: -30, duration: 4.500, ease: 'sine.inOut' }, 0);
+        atmTl.fromTo(scope + ' .rf-vignette', { opacity: 0.3 }, { opacity: 0.6, duration: 4.500/2, ease: 'sine.inOut', repeat: 1, yoyo: true }, 0);
+
+        // Entry choreography
+        const introTl = gsap.timeline();
+        introTl.from(scope + ' .rf-eyebrow-tick', { scaleX: 0, transformOrigin: 'left center', duration: 0.4, ease: 'power3.out' }, 0);
+        introTl.from(scope + ' .rf-eyebrow', { x: -20, opacity: 0, duration: 0.5, ease: 'power3.out' }, 0.05);
+        introTl.from(scope + ' .rf-headline', { y: 40, opacity: 0, duration: 0.8, ease: 'power3.out' }, 0.15);
+        introTl.from(scope + ' .rf-subhead', { y: 20, opacity: 0, duration: 0.55, ease: 'power2.out' }, 0.4);
+        introTl.from(scope + ' .rf-body', { y: 15, opacity: 0, duration: 0.55, ease: 'power2.out' }, 0.5);
+        introTl.from(scope + ' .rf-bullet', { x: -20, opacity: 0, duration: 0.45, stagger: 0.12, ease: 'power3.out' }, 0.6);
+        introTl.from(scope + ' .rf-tagline', { y: 20, opacity: 0, duration: 0.6, ease: 'power3.out' }, 0.5);
+        introTl.from(scope + ' .rf-cta', { scale: 0.9, opacity: 0, duration: 0.5, ease: 'back.out(1.6)' }, 0.7);
+
+        tl.add(atmTl, 0);
+        tl.add(introTl, 0.1);
+        // Gentle content fade on exit — avoids a cover-panel wipe that would
+        // flash the page bg during the cut to the next scene.
+        tl.to(scope + ' .rf-content', { opacity: 0, y: -20, duration: 0.5, ease: 'power2.in' }, 4.000);
+
+        window.__timelines[compId] = tl;
+      })();
+    </script>
+  </div>
+</template>

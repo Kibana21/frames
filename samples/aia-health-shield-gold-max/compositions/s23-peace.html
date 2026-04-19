@@ -1,0 +1,92 @@
+<template id="scene23-peace-template">
+  <div
+    data-composition-id="scene23-peace"
+    data-width="1920"
+    data-height="1080"
+    data-duration="4"
+  >
+    <style>
+      [data-composition-id="scene23-peace"] {
+        position: relative;
+        width: 1920px;
+        height: 1080px;
+        background: #09090C;
+        font-family: 'Inter', sans-serif;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+      }
+
+      [data-composition-id="scene23-peace"] .inner {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0;
+        text-align: center;
+        max-width: 1500px;
+        padding: 0 60px;
+      }
+
+      [data-composition-id="scene23-peace"] .quote {
+        font-size: 72px;
+        font-weight: 700;
+        color: #ffffff;
+        line-height: 1.35;
+        text-align: center;
+        max-width: 1400px;
+        margin-bottom: 60px;
+        opacity: 0;
+      }
+
+      [data-composition-id="scene23-peace"] .credit {
+        font-size: 28px;
+        color: #C9A84C;
+        letter-spacing: 0.1em;
+        font-weight: 500;
+        opacity: 0;
+      }
+
+      [data-composition-id="scene23-peace"] .credit::before {
+        content: '— ';
+      }
+
+      [data-composition-id="scene23-peace"] .fade {
+        position: absolute;
+        inset: 0;
+        background: #09090C;
+        opacity: 0;
+        pointer-events: none;
+      }
+    </style>
+
+    <div class="inner">
+      <div class="quote">"When you're focused on recovery, the last thing you should worry about is the bill."</div>
+      <div class="credit">AIA HealthShield Gold Max</div>
+    </div>
+
+    <div class="fade"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      (function () {
+        const sc = '[data-composition-id="scene23-peace"]';
+        const el = (cls) => document.querySelector(sc + ' ' + cls);
+
+        const tl = gsap.timeline({ paused: true });
+
+        gsap.set(el('.quote'), { y: 20, opacity: 0 });
+        gsap.set(el('.credit'), { opacity: 0 });
+        gsap.set(el('.fade'), { opacity: 0 });
+
+        tl
+          .to(el('.quote'), { y: 0, opacity: 1, duration: 1.5, ease: 'power2.out' }, 0.2)
+          .to(el('.credit'), { opacity: 1, duration: 0.6, ease: 'power2.out' }, 1.8)
+          .to(el('.fade'), { opacity: 1, duration: 0.4, ease: 'power2.inOut' }, 3.6);
+
+        window.__timelines = window.__timelines || {};
+        window.__timelines['scene23-peace'] = tl;
+      })();
+    </script>
+  </div>
+</template>

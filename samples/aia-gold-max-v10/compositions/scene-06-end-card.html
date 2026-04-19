@@ -1,0 +1,451 @@
+<template id="scene-06-end-card-template">
+<div data-composition-id="scene-06-end-card" data-start="0" data-width="1920" data-height="1080" data-duration="5.000">
+    <style>
+        [data-composition-id="scene-06-end-card"] {
+            --red: #D31145;
+            --dark-red: #A80E37;
+            --pink-soft: #F5DDE0;
+            --pink-deep: #E9B5BA;
+            --cream: #FAF4EE;
+            --beige: #E8D9C5;
+            --orange: #E86C29;
+            --ink: #1A1A1A;
+            --grey: #D0D0D0;
+            background-color: var(--cream);
+            font-family: "Inter", sans-serif;
+            overflow: hidden;
+        }
+
+        [data-composition-id="scene-06-end-card"] .camera-rig {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            perspective: 1800px;
+        }
+
+        [data-composition-id="scene-06-end-card"] .perspective-wrapper {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+        }
+
+        [data-composition-id="scene-06-end-card"] .z-stack-layer {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Atmospherics */
+        [data-composition-id="scene-06-end-card"] .atmosphere-grain {
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            top: -50%;
+            left: -50%;
+            opacity: 0.08;
+            mix-blend-mode: overlay;
+            transform-origin: center center;
+        }
+
+        [data-composition-id="scene-06-end-card"] .atmosphere-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+        }
+
+        [data-composition-id="scene-06-end-card"] .orb-a {
+            width: 800px;
+            height: 800px;
+            background: var(--pink-soft);
+            top: 60%;
+            left: -20%;
+            opacity: 0.4;
+        }
+
+        [data-composition-id="scene-06-end-card"] .orb-b {
+            width: 600px;
+            height: 600px;
+            background: var(--beige);
+            top: -10%;
+            right: -15%;
+            opacity: 0.3;
+            filter: blur(60px);
+        }
+
+        [data-composition-id="scene-06-end-card"] .atmosphere-vignette {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, transparent 50%, var(--dark-red) 120%);
+            opacity: 0.15;
+        }
+
+        [data-composition-id="scene-06-end-card"] .atmosphere-light-ray {
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 4px;
+            transform: rotate(25deg);
+            opacity: 0.05;
+            background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.5) 50%, transparent 100%);
+        }
+        [data-composition-id="scene-06-end-card"] .light-ray-2 {
+            transform: rotate(-35deg);
+            opacity: 0.04;
+        }
+        
+        /* ADDED: Particle Grid */
+        [data-composition-id="scene-06-end-card"] .particle-grid {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            grid-template-rows: repeat(8, 1fr);
+            opacity: 0.5;
+        }
+        [data-composition-id="scene-06-end-card"] .particle-dot {
+            width: 3px;
+            height: 3px;
+            background-color: var(--pink-deep);
+            border-radius: 50%;
+            justify-self: center;
+            align-self: center;
+        }
+
+        /* Content */
+        [data-composition-id="scene-06-end-card"] .content-element {
+            position: absolute;
+        }
+
+        [data-composition-id="scene-06-end-card"] .logo-wordmark-container {
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 300px;
+            height: 140px;
+        }
+
+        [data-composition-id="scene-06-end-card"] .logo-wordmark-container svg {
+            width: 100%;
+            height: 100%;
+            overflow: visible;
+        }
+
+        [data-composition-id="scene-06-end-card"] .logo-path {
+            fill: var(--red);
+            stroke: none;
+        }
+        
+        /* ADDED: Outline logo for stacked effect */
+        [data-composition-id="scene-06-end-card"] .logo-wordmark-outline {
+            opacity: 0;
+            z-index: -1; /* Behind main logo */
+        }
+        [data-composition-id="scene-06-end-card"] .logo-wordmark-outline .logo-path {
+            fill: none;
+            stroke: var(--pink-deep);
+            stroke-width: 2px;
+        }
+
+        [data-composition-id="scene-06-end-card"] .brand-tagline {
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: var(--red);
+            font-size: 28px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            white-space: nowrap;
+        }
+
+        [data-composition-id="scene-06-end-card"] .char-wrap {
+            display: inline-block;
+            overflow: hidden;
+            vertical-align: bottom;
+        }
+
+        [data-composition-id="scene-06-end-card"] .char {
+            display: inline-block;
+        }
+
+        [data-composition-id="scene-06-end-card"] .brand-cta {
+            bottom: 120px;
+            right: 100px;
+            color: var(--ink);
+            font-size: 22px;
+            font-weight: 400;
+        }
+
+        [data-composition-id="scene-06-end-card"] .word {
+            display: inline-block;
+            margin-right: 0.4em;
+        }
+
+        [data-composition-id="scene-06-end-card"] .cta-accent-bar {
+            bottom: 110px;
+            right: 100px;
+            width: 0;
+            height: 4px;
+            background-color: var(--red);
+            transform-origin: right;
+        }
+
+        [data-composition-id="scene-06-end-card"] .disclaimer-text {
+            bottom: 80px;
+            right: 100px;
+            color: var(--ink);
+            opacity: 0.6;
+            font-size: 14px;
+            font-weight: 400;
+        }
+
+        [data-composition-id="scene-06-end-card"] .icon-heart-cross {
+            top: 120px;
+            right: 120px;
+            width: 48px;
+            height: 48px;
+            opacity: 0.7;
+        }
+
+        [data-composition-id="scene-06-end-card"] .icon-heart-cross svg {
+            fill: var(--pink-deep);
+        }
+
+        [data-composition-id="scene-06-end-card"] .divider-rule {
+            top: 60%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 1px;
+            background-color: var(--grey);
+            position: relative;
+            overflow: hidden;
+        }
+        /* ADDED: Light sweep for divider */
+        [data-composition-id="scene-06-end-card"] .divider-rule::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(to right, transparent 0%, rgba(255,255,255,0.7) 50%, transparent 100%);
+            transform: translateX(-100%);
+        }
+
+    </style>
+
+    <div class="camera-rig">
+        <div class="perspective-wrapper">
+            <!-- Z-Stack Background -->
+            <div class="z-stack-layer" style="transform: translateZ(-200px);">
+                <div class="clip atmosphere-orb orb-a" data-start="0" data-duration="5.000" data-track-index="2"></div>
+                <div class="clip atmosphere-orb orb-b" data-start="0" data-duration="5.000" data-track-index="3"></div>
+                <div class="clip atmosphere-light-ray" data-start="0" data-duration="5.000" data-track-index="5"></div>
+                <div class="clip atmosphere-light-ray light-ray-2" data-start="0" data-duration="5.000" data-track-index="6"></div>
+                <!-- ADDED: Particle Grid -->
+                <div class="clip particle-grid" data-start="0.8" data-duration="4.0" data-track-index="7">
+                    <!-- Dots will be generated by JS -->
+                </div>
+            </div>
+
+            <!-- Z-Stack Midground -->
+            <div class="z-stack-layer">
+                <!-- ADDED: Outline logo for stacked effect -->
+                <div class="clip content-element logo-wordmark-container logo-wordmark-outline" data-start="0" data-duration="5.000" data-track-index="19">
+                     <svg viewBox="0 0 300 140">
+                        <path class="logo-path" data-morph-id="1" d="M150 10 L 30 50 L 30 100 L 150 130 L 270 100 L 270 50 Z"></path>
+                        <path class="logo-path" data-morph-id="2" d="M150 20 L 50 60 L 50 95 L 150 120 L 250 95 L 250 60 Z"></path>
+                        <path class="logo-path" data-morph-id="3" d="M145 25 L 145 115 L 155 115 L 155 25 Z"></path>
+                        <path class="logo-path" data-morph-id="4" d="M120 40 L 120 100 L 130 100 L 130 40 Z"></path>
+                        <path class="logo-path" data-morph-id="5" d="M170 40 L 170 100 L 180 100 L 180 40 Z"></path>
+                    </svg>
+                </div>
+
+                <div class="clip content-element logo-wordmark-container" data-start="0" data-duration="5.000" data-track-index="20">
+                    <svg viewBox="0 0 300 140">
+                        <path class="logo-path" data-morph-id="1" d="M150 10 L 30 50 L 30 100 L 150 130 L 270 100 L 270 50 Z"></path>
+                        <path class="logo-path" data-morph-id="2" d="M150 20 L 50 60 L 50 95 L 150 120 L 250 95 L 250 60 Z"></path>
+                        <path class="logo-path" data-morph-id="3" d="M145 25 L 145 115 L 155 115 L 155 25 Z"></path>
+                        <path class="logo-path" data-morph-id="4" d="M120 40 L 120 100 L 130 100 L 130 40 Z"></path>
+                        <path class="logo-path" data-morph-id="5" d="M170 40 L 170 100 L 180 100 L 180 40 Z"></path>
+                    </svg>
+                </div>
+
+                <div class="clip content-element brand-tagline" data-start="1.5" data-duration="2.0" data-track-index="21">
+                    <span class="char-wrap"><span class="char">H</span></span><span class="char-wrap"><span class="char">e</span></span><span class="char-wrap"><span class="char">a</span></span><span class="char-wrap"><span class="char">l</span></span><span class="char-wrap"><span class="char">t</span></span><span class="char-wrap"><span class="char">h</span></span><span class="char-wrap"><span class="char">i</span></span><span class="char-wrap"><span class="char">e</span></span><span class="char-wrap"><span class="char">r</span></span><span class="char-wrap"><span class="char">,</span></span><span class="char-wrap"><span class="char">&nbsp;</span></span><span class="char-wrap"><span class="char">L</span></span><span class="char-wrap"><span class="char">o</span></span><span class="char-wrap"><span class="char">n</span></span><span class="char-wrap"><span class="char">g</span></span><span class="char-wrap"><span class="char">e</span></span><span class="char-wrap"><span class="char">r</span></span><span class="char-wrap"><span class="char">,</span></span><span class="char-wrap"><span class="char">&nbsp;</span></span><span class="char-wrap"><span class="char">B</span></span><span class="char-wrap"><span class="char">e</span></span><span class="char-wrap"><span class="char">t</span></span><span class="char-wrap"><span class="char">t</span></span><span class="char-wrap"><span class="char">e</span></span><span class="char-wrap"><span class="char">r</span></span><span class="char-wrap"><span class="char">&nbsp;</span></span><span class="char-wrap"><span class="char">L</span></span><span class="char-wrap"><span class="char">i</span></span><span class="char-wrap"><span class="char">v</span></span><span class="char-wrap"><span class="char">e</span></span><span class="char-wrap"><span class="char">s</span></span><span class="char-wrap"><span class="char">.</span></span>
+                </div>
+
+                <div class="clip content-element brand-cta" data-start="1.8" data-duration="2.0" data-track-index="22">
+                    <span class="word">Speak</span><span class="word">to</span><span class="word">an</span><span class="word">AIA</span><span class="word">Representative.</span>
+                </div>
+
+                <div class="clip content-element disclaimer-text" data-start="2.2" data-duration="2.2" data-track-index="23">This policy is underwritten by AIA Singapore Pte. Ltd. (Co. Reg. No. 201106386R).</div>
+                
+                <div class="clip content-element cta-accent-bar" data-start="2.0" data-duration="0.8" data-track-index="50"></div>
+                
+                <div class="clip content-element divider-rule" data-start="2.0" data-duration="0.8" data-track-index="51"></div>
+
+                <div class="clip content-element icon-heart-cross" data-start="2.5" data-duration="2.0" data-track-index="10">
+                    <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35zM15 8h-2V6h-2v2H9v2h2v2h2v-2h2V8z"></path></svg>
+                </div>
+            </div>
+
+            <!-- Z-Stack Foreground -->
+            <div class="z-stack-layer" style="transform: translateZ(50px);">
+                <svg class="clip atmosphere-grain" data-start="0" data-duration="5.000" data-track-index="1">
+                    <filter id="grainy">
+                        <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/>
+                    </filter>
+                    <rect width="100%" height="100%" filter="url(#grainy)"></rect>
+                </svg>
+                <div class="clip atmosphere-vignette" data-start="0" data-duration="5.000" data-track-index="4"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/MorphSVGPlugin.min.js"></script>
+    <script>
+        (function () {
+            window.__timelines = window.__timelines || {};
+            gsap.registerPlugin(MorphSVGPlugin);
+
+            const root = '[data-composition-id="scene-06-end-card"]';
+            const duration = 5.000;
+            const tl = gsap.timeline({ paused: true });
+
+            // --- ADDED: Particle Grid Generation ---
+            const particleGrid = document.querySelector(root + ' .particle-grid');
+            let particleHTML = '';
+            for (let i = 0; i < 12 * 8; i++) {
+                particleHTML += '<div class="particle-dot"></div>';
+            }
+            particleGrid.innerHTML = particleHTML;
+
+            // --- Data for Morph ---
+            const aiaPaths = {
+                p1: "M56.3,112.5L25,10.8h25.7l16.4,59.8h0.4l16.4-59.8h25.7L98.3,112.5H74.8l-5.4-22.3H61.1L56.3,112.5z M63.6,79.1h23.3L75.2,34L63.6,79.1z",
+                p2: "M138.8,112.5V10.8h22.9v101.7H138.8z",
+                p3: "M218.5,112.5L187.2,10.8h25.7l16.4,59.8h0.4l16.4-59.8h25.7l-31.4,101.7h-23.5l-5.4-22.3h-22.5L218.5,112.5z M225.8,79.1h23.3L237.4,34L225.8,79.1z",
+                p4: "M150,65 L150,65",
+                p5: "M150,65 L150,65"
+            };
+
+            // --- Sub-timelines ---
+            const entryTl = gsap.timeline();
+            entryTl
+                .to(root + ' .logo-wordmark-container:not(.logo-wordmark-outline) .logo-path[data-morph-id="1"]', { duration: 1.2, morphSVG: aiaPaths.p1, ease: "power3.inOut" }, 0)
+                .to(root + ' .logo-wordmark-container:not(.logo-wordmark-outline) .logo-path[data-morph-id="2"]', { duration: 1.2, morphSVG: aiaPaths.p2, ease: "power3.inOut" }, 0)
+                .to(root + ' .logo-wordmark-container:not(.logo-wordmark-outline) .logo-path[data-morph-id="3"]', { duration: 1.2, morphSVG: aiaPaths.p3, ease: "power3.inOut" }, 0)
+                .to(root + ' .logo-wordmark-container:not(.logo-wordmark-outline) .logo-path[data-morph-id="4"]', { duration: 1.2, morphSVG: aiaPaths.p4, ease: "power3.inOut" }, 0)
+                .to(root + ' .logo-wordmark-container:not(.logo-wordmark-outline) .logo-path[data-morph-id="5"]', { duration: 1.2, morphSVG: aiaPaths.p5, ease: "power3.inOut" }, 0)
+                .to(root + ' .logo-wordmark-container:not(.logo-wordmark-outline)', {
+                    duration: 1.0,
+                    top: "120px",
+                    left: "100px",
+                    transform: "translate(0, 0)",
+                    ease: "power3.out"
+                }, 1.0)
+                // ADDED: Animate outline logo in sync
+                .to(root + ' .logo-wordmark-outline .logo-path[data-morph-id="1"]', { duration: 1.2, morphSVG: aiaPaths.p1, ease: "power3.inOut" }, 0)
+                .to(root + ' .logo-wordmark-outline .logo-path[data-morph-id="2"]', { duration: 1.2, morphSVG: aiaPaths.p2, ease: "power3.inOut" }, 0)
+                .to(root + ' .logo-wordmark-outline .logo-path[data-morph-id="3"]', { duration: 1.2, morphSVG: aiaPaths.p3, ease: "power3.inOut" }, 0)
+                .to(root + ' .logo-wordmark-outline .logo-path[data-morph-id="4"]', { duration: 1.2, morphSVG: aiaPaths.p4, ease: "power3.inOut" }, 0)
+                .to(root + ' .logo-wordmark-outline .logo-path[data-morph-id="5"]', { duration: 1.2, morphSVG: aiaPaths.p5, ease: "power3.inOut" }, 0)
+                .fromTo(root + ' .logo-wordmark-outline', { opacity: 0, top: "50%", left: "50%", transform: "translate(-50%, -50%)" }, {
+                    duration: 1.0,
+                    opacity: 0.4,
+                    top: "128px", // slight offset for parallax
+                    left: "108px",
+                    transform: "translate(0, 0)",
+                    ease: "power3.out"
+                }, 1.0);
+
+            const copyTl = gsap.timeline();
+            copyTl
+                .from(root + ' .brand-tagline .char', {
+                    yPercent: 110,
+                    stagger: 0.04,
+                    duration: 0.8,
+                    ease: "back.out(1.6)"
+                }, 0)
+                .from(root + ' .brand-cta .word', {
+                    y: 20,
+                    opacity: 0,
+                    filter: 'blur(8px)',
+                    stagger: 0.12,
+                    duration: 0.7,
+                    ease: 'power3.out'
+                }, 0.3)
+                .from(root + ' .disclaimer-text', { opacity: 0, y: 10, duration: 0.6, ease: 'power2.out' }, 0.7)
+                .to(root + ' .cta-accent-bar', { width: '330px', ease: 'power3.out', duration: 0.8 }, 0.5)
+                .fromTo(root + ' .divider-rule', { scaleX: 0 }, { scaleX: 1, duration: 0.8, ease: 'power3.out' }, 0.5)
+                .to(root + ' .divider-rule::before', { x: '200%', duration: 1.0, ease: 'power2.inOut' }, 0.6) // ADDED: Divider light sweep
+                .from(root + ' .icon-heart-cross', { scale: 0, opacity: 0, rotate: -45, duration: 0.8, ease: 'back.out(1.7)' }, 1.0)
+                // ADDED: Tracking pulse on tagline for hold
+                .to(root + ' .brand-tagline', { letterSpacing: '0.07em', duration: 2.0, ease: 'sine.inOut', repeat: 1, yoyo: true }, 1.0);
+
+            const atmosphereTl = gsap.timeline();
+            const cycle = 4.5;
+            const loops = Math.floor(duration / cycle);
+            atmosphereTl
+                .to(root + ' .orb-a', { x: '+=80', y: '-=50', scale: 1.1, duration: cycle, ease: 'sine.inOut' }, 0)
+                .to(root + ' .orb-b', { x: '-=60', y: '+=40', scale: 0.9, duration: cycle, ease: 'sine.inOut' }, 0)
+                .to(root + ' .atmosphere-vignette', { opacity: 0.2, duration: cycle / 2, ease: 'sine.inOut' }, 0)
+                .to(root + ' .atmosphere-vignette', { opacity: 0.15, duration: cycle / 2, ease: 'sine.inOut' }, cycle / 2)
+                .fromTo(root + ' .atmosphere-light-ray', { y: '-50%' }, { y: '150%', duration: duration, ease: 'linear' }, 0)
+                .fromTo(root + ' .light-ray-2', { y: '150%' }, { y: '-50%', duration: duration, ease: 'linear' }, 0)
+                .to(root + ' .atmosphere-grain', { rotation: 360, duration: duration * 2, ease: 'linear' }, 0);
+            if (loops > 0) {
+                atmosphereTl.repeat(loops - 1).yoyo(true);
+            }
+            
+            // ADDED: Particle grid animation
+            const particlesTl = gsap.timeline();
+            particlesTl
+                .from(gsap.utils.toArray(root + ' .particle-dot'), {
+                    scale: 0,
+                    opacity: 0,
+                    duration: 1.2,
+                    ease: 'power3.out',
+                    stagger: {
+                        grid: [8, 12],
+                        from: 'center',
+                        amount: 0.6
+                    }
+                }, 0)
+                .to(root + ' .particle-grid', {
+                    opacity: 0.2,
+                    duration: 2.5,
+                    ease: 'sine.inOut',
+                    repeat: 1,
+                    yoyo: true
+                }, 1.0);
+
+            // --- Main Timeline ---
+            tl
+                .to(root, { scale: 1.05, duration: duration, ease: 'sine.inOut' }, 0)
+                .to(root + ' .perspective-wrapper', { rotateY: -2, duration: duration / 2, ease: 'sine.inOut' }, 0)
+                .to(root + ' .perspective-wrapper', { rotateY: 2, duration: duration / 2, ease: 'sine.inOut' }, duration / 2)
+                .add(atmosphereTl, 0)
+                .add(particlesTl, 0.8) // Add particle animation
+                .add(entryTl, 0)
+                .add(copyTl, 1.5)
+                .to(root + ' .content-element', {
+                    opacity: 0,
+                    y: -20,
+                    duration: 0.6,
+                    stagger: 0.05,
+                    ease: 'power2.in'
+                }, duration - 0.6);
+
+            window.__timelines["scene-06-end-card"] = tl;
+        })();
+    </script>
+</div>
+</template>

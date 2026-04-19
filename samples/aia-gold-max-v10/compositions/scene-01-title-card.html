@@ -1,0 +1,386 @@
+<template id="scene-01-title-card-template">
+<div data-composition-id="scene-01-title-card" data-start="0" data-width="1920" data-height="1080" data-duration="5.000">
+    <style>
+        [data-composition-id="scene-01-title-card"] {
+            --aia-red: #D31145;
+            --dark-ink: #1A1A1A;
+            --rose-pink: #F5DDE0;
+            --warm-beige: #E8D9C5;
+            --cream-bg: #FAF4EE;
+            --soft-grey: #D0D0D0;
+            background-color: var(--cream-bg);
+            font-family: "Inter", sans-serif;
+            color: var(--dark-ink);
+        }
+
+        [data-composition-id="scene-01-title-card"] .scene-root {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            perspective: 1800px;
+            overflow: hidden;
+        }
+
+        /* Atmospheric Layers */
+        [data-composition-id="scene-01-title-card"] .bg-grain {
+            position: absolute;
+            width: 150%;
+            height: 150%;
+            top: -25%;
+            left: -25%;
+            opacity: 0.07;
+            mix-blend-mode: overlay;
+        }
+
+        [data-composition-id="scene-01-title-card"] .orb-a,
+        [data-composition-id="scene-01-title-card"] .orb-b {
+            position: absolute;
+            border-radius: 50%;
+        }
+
+        [data-composition-id="scene-01-title-card"] .orb-a {
+            width: 800px;
+            height: 800px;
+            left: -200px;
+            bottom: -200px;
+            background: radial-gradient(circle, var(--rose-pink) 0%, transparent 60%);
+            filter: blur(80px);
+            opacity: 0.4;
+        }
+
+        [data-composition-id="scene-01-title-card"] .orb-b {
+            width: 600px;
+            height: 600px;
+            right: -150px;
+            top: -150px;
+            background: radial-gradient(circle, var(--warm-beige) 0%, transparent 60%);
+            filter: blur(60px);
+            opacity: 0.3;
+        }
+
+        [data-composition-id="scene-01-title-card"] .vignette-overlay {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at center, transparent 50%, rgba(26, 26, 26, 0.8) 100%);
+            opacity: 0.15;
+        }
+
+        /* Shield Icon */
+        [data-composition-id="scene-01-title-card"] .shield-icon {
+            position: absolute;
+            width: 300px;
+            height: 330px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) translateZ(40px);
+            will-change: transform, top, left, scale;
+        }
+
+        [data-composition-id="scene-01-title-card"] .shield-fill-wrapper {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            clip-path: inset(0 100% 0 0);
+        }
+
+        [data-composition-id="scene-01-title-card"] .shield-fill {
+            width: 100%;
+            height: 100%;
+            fill: var(--aia-red);
+        }
+
+        [data-composition-id="scene-01-title-card"] .shield-outline {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            stroke: var(--aia-red);
+            stroke-width: 4px;
+            fill: none;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+        
+        [data-composition-id="scene-01-title-card"] .light-sweep {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(110deg, transparent 30%, rgba(255,255,255,0.5) 50%, transparent 70%);
+            transform: translateX(-110%);
+        }
+
+        /* Copy Block */
+        [data-composition-id="scene-01-title-card"] .copy-wrapper {
+            position: absolute;
+            top: 280px;
+            left: 100px;
+            width: 600px;
+            transform: translateZ(0);
+            will-change: clip-path;
+        }
+
+        [data-composition-id="scene-01-title-card"] .eyebrow {
+            font-size: 18px;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            color: var(--aia-red);
+            text-transform: uppercase;
+            margin: 0 0 8px 0;
+        }
+
+        [data-composition-id="scene-01-title-card"] .eyebrow-accent {
+            width: 100%;
+            height: 4px;
+            background-color: var(--aia-red);
+            margin-bottom: 24px;
+        }
+
+        [data-composition-id="scene-01-title-card"] .headline {
+            font-size: 84px;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+            margin: 0 0 24px 0;
+            position: relative;
+            z-index: 1;
+        }
+        [data-composition-id="scene-01-title-card"] .headline-outline {
+            position: absolute;
+            top: 0;
+            left: 0;
+            transform: translate(8px, 8px);
+            z-index: 0;
+            color: transparent;
+            -webkit-text-stroke: 1px var(--dark-ink);
+            opacity: 0.1;
+            pointer-events: none;
+        }
+        [data-composition-id="scene-01-title-card"] .char-wrap { display: inline-block; overflow: hidden; }
+        [data-composition-id="scene-01-title-card"] .char { display: inline-block; }
+
+        [data-composition-id="scene-01-title-card"] .subhead {
+            font-size: 22px;
+            line-height: 1.5;
+            width: 80%;
+        }
+        [data-composition-id="scene-01-title-card"] .word-wrap { display: inline-block; }
+        [data-composition-id="scene-01-title-card"] .word { display: inline-block; }
+
+        /* Benefit Card */
+        [data-composition-id="scene-01-title-card"] .benefit-card-wrapper {
+            position: absolute;
+            bottom: 100px;
+            right: 100px;
+            transform: translateZ(10px);
+            will-change: clip-path, opacity, transform;
+        }
+
+        [data-composition-id="scene-01-title-card"] .benefit-card {
+            position: relative;
+            width: 420px;
+            background-color: var(--rose-pink);
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        }
+        
+        [data-composition-id="scene-01-title-card"] .card-tape-accent {
+            position: absolute;
+            top: -12px;
+            left: -12px;
+            width: 100px;
+            height: 40px;
+            background-color: var(--warm-beige);
+            opacity: 0.6;
+            transform: rotate(-45deg);
+            border-radius: 4px;
+        }
+
+        [data-composition-id="scene-01-title-card"] .card-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        [data-composition-id="scene-01-title-card"] .card-icon {
+            width: 48px;
+            height: 52px;
+            margin-bottom: 16px;
+            position: relative;
+        }
+        [data-composition-id="scene-01-title-card"] .card-icon svg.card-shield-bg { fill: var(--aia-red); }
+        [data-composition-id="scene-01-title-card"] .card-check {
+            position: absolute;
+            width: 60%;
+            height: 60%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            stroke: var(--cream-bg);
+            stroke-width: 3;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            fill: none;
+        }
+
+        [data-composition-id="scene-01-title-card"] .card-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin: 0 0 8px 0;
+        }
+
+        [data-composition-id="scene-01-title-card"] .card-body {
+            font-size: 18px;
+            line-height: 1.4;
+            margin: 0;
+            opacity: 0.8;
+        }
+
+    </style>
+
+    <div class="scene-root">
+        <div class="bg-grain clip" data-start="0" data-duration="5.000" data-track-index="1">
+            <svg width="100%" height="100%" xmlns='http://www.w3.org/2000/svg'>
+                <filter id='noiseFilter'>
+                    <feTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch' />
+                </filter>
+                <rect width='100%' height='100%' filter='url(#noiseFilter)' />
+            </svg>
+        </div>
+        <div class="orb-a clip" data-start="0" data-duration="5.000" data-track-index="2"></div>
+        <div class="orb-b clip" data-start="0" data-duration="5.000" data-track-index="3"></div>
+        <div class="vignette-overlay clip" data-start="0" data-duration="5.000" data-track-index="4"></div>
+
+        <div class="shield-icon clip" data-start="0" data-duration="5.000" data-track-index="10">
+            <div class="shield-fill-wrapper">
+                <svg class="shield-fill" viewBox="0 0 100 105">
+                    <path d="M50 10 L95 30 V 65 C 95 85, 50 105, 50 105 C 5 85, 5 65, 5 65 V 30 Z"/>
+                </svg>
+            </div>
+            <svg class="shield-outline" viewBox="0 0 100 105">
+                <path class="shield-outline-path" d="M56 10 L95 30 V 65 C 95 85, 50 105, 50 105 C 5 85, 5 65, 5 65 V 30 L44 10"/>
+                <path class="shield-gap-seal" d="M44 10 L56 10"/>
+            </svg>
+            <div class="light-sweep"></div>
+        </div>
+
+        <div class="copy-wrapper clip" data-start="0.9" data-duration="4.1" data-track-index="20">
+            <div class="eyebrow-wrapper">
+                <p class="eyebrow">AIA HEALTHSHIELD GOLD MAX</p>
+                <div class="eyebrow-accent"></div>
+            </div>
+            <h1 class="headline">Complete your cover.</h1>
+            <h1 class="headline headline-outline">Complete your cover.</h1>
+            <p class="subhead">Enjoy coverage for private hospitals and wards, so you can focus on recovery.</p>
+        </div>
+
+        <div class="benefit-card-wrapper clip" data-start="1.5" data-duration="3.1" data-track-index="30">
+            <div class="benefit-card">
+                <div class="card-tape-accent"></div>
+                <div class="card-content">
+                    <div class="card-icon">
+                        <svg class="card-shield-bg" viewBox="0 0 100 105"><path d="M50 10 L95 30 V 65 C 95 85, 50 105, 50 105 C 5 85, 5 65, 5 65 V 30 Z"/></svg>
+                        <svg class="card-check" viewBox="0 0 24 24"><path class="card-check-path" d="M5 13l4 4L19 7"/></svg>
+                    </div>
+                    <h3 class="card-title">Private Care Access</h3>
+                    <p class="card-body">Full coverage for private hospitals and A&E.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+        (function() {
+            const scope = '[data-composition-id="scene-01-title-card"]';
+            const duration = 5.000;
+
+            function splitText(selector, unit) {
+                const elements = document.querySelectorAll(selector);
+                if (!elements.length) return;
+                elements.forEach(element => {
+                    const text = element.textContent.trim();
+                    const split = unit === 'char' ? text.split('') : text.split(/\s+/);
+                    element.innerHTML = split.map(item => {
+                        if (unit === 'char') {
+                            return `<span class="char-wrap"><span class="char">${item === ' ' ? '&nbsp;' : item}</span></span>`;
+                        }
+                        return `<span class="word-wrap"><span class="word">${item}</span></span> `;
+                    }).join('');
+                });
+            }
+
+            splitText(scope + ' .headline', 'char');
+            splitText(scope + ' .subhead', 'word');
+
+            const tl = gsap.timeline({ paused: true });
+            window.__timelines = window.__timelines || {};
+            window.__timelines["scene-01-title-card"] = tl;
+
+            const atmosphereTl = gsap.timeline();
+            const shieldTl = gsap.timeline();
+            const contentTl = gsap.timeline();
+            const cardTl = gsap.timeline();
+
+            // Atmosphere
+            const cycle = 5;
+            const tapeCycle = 2.5;
+            atmosphereTl
+                .to(scope + ' .orb-a', { x: '+=80', y: '-=50', scale: 1.1, duration: cycle, ease: 'sine.inOut' }, 0)
+                .to(scope + ' .orb-b', { x: '-=60', y: '+=40', scale: 0.9, duration: cycle, ease: 'sine.inOut' }, 0)
+                .to(scope + ' .vignette-overlay', { opacity: 0.2, duration: cycle / 2, ease: 'sine.inOut', yoyo: true, repeat: 1 }, 0)
+                .to(scope + ' .bg-grain', { rotation: 10, duration: duration, ease: 'none' }, 0)
+                .fromTo(scope + ' .card-tape-accent', { rotation: -45 }, { rotation: -47, duration: tapeCycle, ease: 'sine.inOut', yoyo: true, repeat: Math.floor((duration - 1.5) / tapeCycle) }, 1.5);
+
+            // Shield Assembly (Signature Moment)
+            const sealPath = document.querySelector(scope + ' .shield-gap-seal');
+            const sealLength = sealPath.getTotalLength();
+
+            shieldTl
+                .set(sealPath, { strokeDasharray: sealLength, strokeDashoffset: sealLength })
+                .to(sealPath, { strokeDashoffset: 0, duration: 0.6, ease: 'power3.out' }, 0.2)
+                .fromTo(scope + ' .shield-fill-wrapper', { clipPath: 'inset(0 100% 0 0)' }, { clipPath: 'inset(0 0% 0 0)', duration: 0.8, ease: 'power3.out' }, 0.3)
+                .fromTo(scope + ' .light-sweep', { x: '-110%' }, { x: '110%', duration: 1.0, ease: 'power2.inOut' }, 0.9)
+                .to(scope + ' .shield-icon', {
+                    top: '100px',
+                    left: '100px',
+                    scale: 0.5,
+                    transform: 'translate(0, 0) translateZ(40px)',
+                    duration: 1.2,
+                    ease: 'power3.inOut'
+                }, 1.2);
+
+            // Content Reveal
+            contentTl
+                .from(gsap.utils.toArray(scope + ' .headline:not(.headline-outline) .char'), { y: '100%', stagger: 0.04, duration: 0.8, ease: 'back.out(1.7)' }, 0)
+                .from(gsap.utils.toArray(scope + ' .headline-outline .char'), { y: '100%', opacity: 0, stagger: 0.04, duration: 0.8, ease: 'back.out(1.7)' }, 0.05)
+                .from(scope + ' .eyebrow', { opacity: 0, y: 10, duration: 0.5, ease: 'power2.out' }, 0.1)
+                .from(scope + ' .eyebrow-accent', { width: '0%', duration: 0.7, ease: 'power3.out' }, 0.2)
+                .from(gsap.utils.toArray(scope + ' .word'), { y: 20, opacity: 0, filter: 'blur(8px)', stagger: 0.08, duration: 0.6, ease: 'power3.out' }, 0.4)
+                .from(scope + ' .benefit-card-wrapper', { clipPath: 'polygon(0% 100%, 100% 100%, 100% 100%, 0% 100%)', duration: 0.8, ease: 'power3.out' }, 0.6);
+
+            // Benefit Card Content Timeline
+            const checkPath = document.querySelector(scope + ' .card-check-path');
+            const checkLength = checkPath.getTotalLength();
+            cardTl
+                .from(scope + ' .card-tape-accent', { y: -20, rotation: -60, opacity: 0, duration: 0.5, ease: 'back.out(2)' }, 0)
+                .from(scope + ' .card-icon .card-shield-bg', { scale: 0.8, opacity: 0, transformOrigin: 'center', duration: 0.4, ease: 'power3.out' }, 0.1)
+                .set(checkPath, { strokeDasharray: checkLength, strokeDashoffset: checkLength })
+                .to(checkPath, { strokeDashoffset: 0, duration: 0.5, ease: 'power2.out' }, 0.3)
+                .from([scope + ' .card-title', scope + ' .card-body'], { y: 20, opacity: 0, stagger: 0.1, duration: 0.6, ease: 'power2.out' }, 0.4);
+
+            // Main Timeline
+            tl
+                .add(atmosphereTl, 0)
+                .add(shieldTl, 0)
+                .add(contentTl, 1.2)
+                .add(cardTl, 2.1) // Start card content animation after wrapper is mostly revealed
+                .to(scope + ' .scene-root', { scale: 1.05, duration: duration, ease: 'sine.inOut' }, 0)
+                .to(scope + ' .copy-wrapper', { clipPath: 'inset(0 100% 0 0)', duration: 0.6, ease: 'power3.in' }, duration - 0.6)
+                .to(scope + ' .benefit-card-wrapper', { scale: 0.9, opacity: 0, duration: 0.5, ease: 'power2.in' }, duration - 0.5);
+
+        })();
+    </script>
+</div>
+</template>

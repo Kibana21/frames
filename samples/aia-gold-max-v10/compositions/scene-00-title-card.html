@@ -1,0 +1,393 @@
+<template id="scene-00-title-card-template">
+<div data-composition-id="scene-00-title-card" data-start="0" data-width="1920" data-height="1080" data-duration="3.500">
+    <style>
+        [data-composition-id="scene-00-title-card"] {
+            background-color: #FAF4EE;
+            font-family: "Inter", sans-serif;
+            color: #1A1A1A;
+            overflow: hidden;
+        }
+
+        [data-composition-id="scene-00-title-card"] .scene-root {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            transform-origin: center center;
+            perspective: 1800px;
+            transform-style: preserve-3d;
+        }
+
+        [data-composition-id="scene-00-title-card"] .bg-blur-layer {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            backdrop-filter: blur(32px);
+            z-index: 100;
+        }
+
+        [data-composition-id="scene-00-title-card"] .grain-overlay {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            mix-blend-mode: overlay;
+            opacity: 0.07;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        [data-composition-id="scene-00-title-card"] .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            will-change: transform, opacity;
+        }
+
+        [data-composition-id="scene-00-title-card"] .orb-a {
+            width: 800px;
+            height: 800px;
+            background-color: #F5DDE0;
+            bottom: -200px;
+            left: -200px;
+            opacity: 0.5;
+        }
+
+        [data-composition-id="scene-00-title-card"] .orb-b {
+            width: 600px;
+            height: 600px;
+            background-color: #E8D9C5;
+            top: -150px;
+            right: -150px;
+            filter: blur(60px);
+            opacity: 0.6;
+        }
+
+        [data-composition-id="scene-00-title-card"] .vignette-overlay {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            background: radial-gradient(ellipse at center, rgba(26, 26, 26, 0) 60%, rgba(26, 26, 26, 0.15) 100%);
+            opacity: 0.8;
+            z-index: 2;
+        }
+
+        [data-composition-id="scene-00-title-card"] .content-wrapper {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 10;
+            transform-style: preserve-3d;
+        }
+
+        [data-composition-id="scene-00-title-card"] .eyebrow {
+            position: absolute;
+            top: 160px;
+            left: 120px;
+            font-size: 20px;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: #D31145;
+        }
+
+        [data-composition-id="scene-00-title-card"] .char-wrap {
+            display: inline-block;
+            overflow: hidden;
+        }
+        [data-composition-id="scene-00-title-card"] .char {
+            display: inline-block;
+            transform: translateY(100%);
+        }
+
+        [data-composition-id="scene-00-title-card"] .eyebrow-bar {
+            position: absolute;
+            top: 192px;
+            left: 120px;
+            width: 0%;
+            height: 4px;
+            background-color: #D31145;
+            transform-origin: left;
+        }
+
+        [data-composition-id="scene-00-title-card"] .headline {
+            position: absolute;
+            top: 220px;
+            left: 120px;
+            font-size: 96px;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+            max-width: 600px;
+        }
+
+        [data-composition-id="scene-00-title-card"] .shield-gap-motif {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 400px;
+            height: 480px;
+            transform: translate(-50%, -50%) scale(1.2);
+            stroke: #E8D9C5;
+            stroke-width: 4;
+            fill: none;
+            opacity: 0.25;
+            z-index: 5;
+        }
+        
+        /* ADDED: Inner fill for the shield */
+        [data-composition-id="scene-00-title-card"] .shield-fill {
+            fill: #E8D9C5;
+            fill-opacity: 0;
+        }
+
+        [data-composition-id="scene-00-title-card"] .comparison-card {
+            position: absolute;
+            top: 420px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 960px;
+            padding: 40px;
+            background-color: #F5DDE0;
+            border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+            transform-style: preserve-3d;
+        }
+
+        [data-composition-id="scene-00-title-card"] .compare-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+            position: relative;
+        }
+
+        [data-composition-id="scene-00-title-card"] .highlight-panel {
+            position: absolute;
+            top: -20px;
+            right: -20px;
+            bottom: -20px;
+            width: calc(33.33% + 10px);
+            background-color: #E9B5BA;
+            border-radius: 12px;
+            z-index: -1;
+        }
+
+        [data-composition-id="scene-00-title-card"] .col-head,
+        [data-composition-id="scene-00-title-card"] .cell {
+            padding: 10px 0;
+            overflow: hidden;
+        }
+        
+        [data-composition-id="scene-00-title-card"] .cell-content {
+            clip-path: inset(0 0 100% 0);
+            display: flex;
+            align-items: center;
+        }
+
+        [data-composition-id="scene-00-title-card"] .col-head {
+            font-size: 18px;
+            font-weight: 600;
+            border-bottom: 1px solid #D0D0D0;
+            padding-bottom: 16px;
+        }
+
+        [data-composition-id="scene-00-title-card"] .col-head-3 {
+            color: #D31145;
+        }
+
+        [data-composition-id="scene-00-title-card"] .cell {
+            font-size: 22px;
+            font-weight: 400;
+        }
+
+        [data-composition-id="scene-00-title-card"] .cell-goldmax {
+            font-weight: 700;
+            color: #D31145;
+        }
+        
+        /* ADDED: Checkmark icon for the "Covered" cell */
+        [data-composition-id="scene-00-title-card"] .check-icon {
+            width: 20px;
+            height: 20px;
+            margin-left: 8px;
+            stroke: #D31145;
+            stroke-width: 2.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            fill: none;
+            transform-origin: center center;
+        }
+    </style>
+
+    <div class="scene-root clip" data-start="0" data-duration="3.500" data-track-index="1">
+        <div class="bg-blur-layer clip" data-start="0" data-duration="0.8" data-track-index="2"></div>
+        <svg class="grain-overlay clip" data-start="0" data-duration="3.500" data-track-index="3">
+            <filter id="noise">
+                <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="4" stitchTiles="stitch" />
+            </filter>
+            <rect width="100%" height="100%" filter="url(#noise)" />
+        </svg>
+        <div class="orb orb-a clip" data-start="0" data-duration="3.500" data-track-index="4"></div>
+        <div class="orb orb-b clip" data-start="0" data-duration="3.500" data-track-index="5"></div>
+        <div class="vignette-overlay clip" data-start="0" data-duration="3.500" data-track-index="6"></div>
+
+        <div class="content-wrapper clip" data-start="0" data-duration="3.500" data-track-index="10">
+            <div class="eyebrow clip" data-start="0.4" data-duration="1.0" data-track-index="20">
+                <span class="char-wrap"><span class="char">Y</span></span><span class="char-wrap"><span class="char">O</span></span><span class="char-wrap"><span class="char">U</span></span><span class="char-wrap"><span class="char">R</span></span><span class="char-wrap"><span class="char">&nbsp;</span></span><span class="char-wrap"><span class="char">H</span></span><span class="char-wrap"><span class="char">E</span></span><span class="char-wrap"><span class="char">A</span></span><span class="char-wrap"><span class="char">L</span></span><span class="char-wrap"><span class="char">T</span></span><span class="char-wrap"><span class="char">H</span></span><span class="char-wrap"><span class="char">&nbsp;</span></span><span class="char-wrap"><span class="char">C</span></span><span class="char-wrap"><span class="char">O</span></span><span class="char-wrap"><span class="char">V</span></span><span class="char-wrap"><span class="char">E</span></span><span class="char-wrap"><span class="char">R</span></span><span class="char-wrap"><span class="char">A</span></span><span class="char-wrap"><span class="char">G</span></span><span class="char-wrap"><span class="char">E</span></span>
+            </div>
+            <div class="eyebrow-bar clip" data-start="0.5" data-duration="0.6" data-track-index="21"></div>
+            <h1 class="headline clip" data-start="0.4" data-duration="2.5" data-track-index="22">Is your plan enough?</h1>
+
+            <div class="comparison-card clip" data-start="0.8" data-duration="2.1" data-track-index="30">
+                <div class="highlight-panel clip" data-start="1.7" data-duration="0.5" data-track-index="31"></div>
+                <div class="compare-grid">
+                    <div class="col-head col-head-1 clip" data-start="1.5" data-duration="0.5" data-track-index="32"><div class="cell-content">Benefit</div></div>
+                    <div class="col-head col-head-2 clip" data-start="1.5" data-duration="0.5" data-track-index="33"><div class="cell-content">MediShield Life</div></div>
+                    <div class="col-head col-head-3 clip" data-start="1.5" data-duration="0.5" data-track-index="34"><div class="cell-content">with Gold Max A</div></div>
+                    <div class="cell cell-benefit clip" data-start="1.6" data-duration="0.5" data-track-index="35"><div class="cell-content">Private Hospital Stay</div></div>
+                    <div class="cell cell-medishield clip" data-start="1.6" data-duration="0.5" data-track-index="36"><div class="cell-content">Partial Coverage</div></div>
+                    <div class="cell cell-goldmax clip" data-start="1.6" data-duration="1.0" data-track-index="37">
+                        <div class="cell-content">Covered
+                            <!-- ADDED ELEMENT 1: Checkmark Icon -->
+                            <svg class="check-icon clip" viewBox="0 0 14 14" data-start="2.2" data-duration="0.6" data-track-index="38">
+                                <path class="check-path" d="M3 8 l3 3 l6 -7" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <svg class="shield-gap-motif clip" viewBox="0 0 100 120" data-start="0.2" data-duration="3.3" data-track-index="40">
+            <!-- ADDED ELEMENT 2: Shield Fill Path -->
+            <path class="shield-fill" d="M50 5 L95 25 L95 85 L50 115 L5 85 L5 25 Z" />
+            <path class="shield-outline" d="M50 5 L95 25 L95 55 M95 65 L95 85 L50 115 L5 85 L5 25 Z" />
+        </svg>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+        (function() {
+            window.__timelines = window.__timelines || {};
+            const compId = "scene-00-title-card";
+            const scope = `[data-composition-id="${compId}"]`;
+            const duration = 3.5;
+
+            const tl = gsap.timeline({
+                paused: true
+            });
+
+            // --- Global Camera Push ---
+            tl.to(scope + ' .scene-root', {
+                scale: 1.05,
+                duration: duration,
+                ease: 'sine.inOut'
+            }, 0);
+
+            // --- Atmospheric Motion ---
+            const atmosphereTl = gsap.timeline();
+            const cycle = duration;
+            atmosphereTl
+                .to(scope + ' .orb-a', { x: '+=40', y: '-=30', opacity: 0.6, duration: cycle, ease: 'sine.inOut' }, 0)
+                .to(scope + ' .orb-b', { x: '-=50', y: '+=20', opacity: 0.5, duration: cycle, ease: 'sine.inOut' }, 0)
+                .to(scope + ' .vignette-overlay', { opacity: 0.6, duration: cycle / 2, ease: 'sine.inOut' })
+                .to(scope + ' .vignette-overlay', { opacity: 0.8, duration: cycle / 2, ease: 'sine.inOut' })
+                .to(scope + ' .grain-overlay', { rotation: 180, duration: cycle, ease: 'none' }, 0);
+            
+            tl.add(atmosphereTl, 0);
+
+            // --- Intro Sequence ---
+            const introTl = gsap.timeline();
+            introTl
+                .to(scope + ' .bg-blur-layer', { backdropFilter: 'blur(0px)', duration: 0.8, ease: 'power3.out' }, 0)
+                .from(scope + ' .eyebrow .char', { y: '100%', stagger: 0.02, duration: 0.8, ease: 'power3.out' }, 0.4)
+                .to(scope + ' .eyebrow-bar', { width: '280px', duration: 0.6, ease: 'power3.out' }, 0.5);
+            
+            // --- ELEVATION: Headline Polish (Tracking Pulse) ---
+            const headlineTl = gsap.timeline();
+            headlineTl
+                .from(scope + ' .headline', { letterSpacing: '0.2em', opacity: 0, duration: 1.2, ease: 'power4.out' }, 0)
+                .to(scope + ' .headline', { letterSpacing: '-0.03em', duration: 1.0, ease: 'sine.inOut', yoyo: true, repeat: 1 }, 1.2); // Pulse after entry
+            
+            introTl.add(headlineTl, 0.4);
+            tl.add(introTl, 0);
+
+            // --- ELEVATION: Signature Moment (Shield Assembly) ---
+            const shieldTl = gsap.timeline();
+            const shieldOutline = document.querySelector(scope + ' .shield-outline');
+            const length = shieldOutline.getTotalLength();
+            shieldOutline.style.strokeDasharray = length;
+            shieldTl
+                .fromTo(shieldOutline, { strokeDashoffset: length, opacity: 0 }, { strokeDashoffset: 0, opacity: 0.25, duration: 1.2, ease: 'power3.out' })
+                .to(scope + ' .shield-fill', { fillOpacity: 0.1, duration: 0.6, ease: 'power2.inOut' }, 0.6);
+            
+            tl.add(shieldTl, 0.2);
+
+            // --- Exhibit Sequence ---
+            const exhibitTl = gsap.timeline();
+            exhibitTl
+                .from(scope + ' .comparison-card', {
+                    y: 100,
+                    z: -400,
+                    rotationX: -15,
+                    opacity: 0,
+                    duration: 0.7,
+                    ease: 'back.out(1.6)'
+                }, 0)
+                .to(gsap.utils.toArray(scope + ' .col-head .cell-content'), {
+                    clipPath: 'inset(0% 0% 0% 0%)',
+                    stagger: 0.08,
+                    duration: 0.5,
+                    ease: 'power3.out'
+                }, 0.7)
+                .to(gsap.utils.toArray(scope + ' .cell .cell-content'), {
+                    clipPath: 'inset(0% 0% 0% 0%)',
+                    stagger: 0.08,
+                    duration: 0.5,
+                    ease: 'power3.out'
+                }, 0.8)
+                .from(scope + ' .highlight-panel', { opacity: 0, duration: 0.5, ease: 'power2.out' }, 0.9);
+
+            // --- ELEVATION: Checkmark Draw & Pop ---
+            const checkPath = document.querySelector(scope + ' .check-path');
+            const checkLength = checkPath.getTotalLength();
+            checkPath.style.strokeDasharray = checkLength;
+            exhibitTl
+                .fromTo(checkPath, { strokeDashoffset: checkLength }, { strokeDashoffset: 0, duration: 0.3, ease: 'power2.out' }, 1.4)
+                .from(scope + ' .check-icon', { scale: 0.5, duration: 0.4, ease: 'back.out(1.8)' }, 1.4);
+
+            tl.add(exhibitTl, 0.8);
+
+            // --- Exit Sequence ---
+            const exitTl = gsap.timeline();
+            exitTl
+                .to(scope + ' .content-wrapper', {
+                    clipPath: 'inset(0 100% 0 0)',
+                    duration: 0.6,
+                    ease: 'power3.inOut'
+                })
+                .to(scope + ' .shield-gap-motif', {
+                    scale: 1,
+                    opacity: 1,
+                    x: '0%',
+                    y: '0%',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    duration: 0.6,
+                    ease: 'power3.inOut'
+                }, 0);
+
+            tl.add(exitTl, duration - 0.6);
+
+            window.__timelines[compId] = tl;
+        })();
+    </script>
+</div>
+</template>

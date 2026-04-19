@@ -1,0 +1,106 @@
+<template id="scene35-end-template">
+  <div
+    data-composition-id="scene35-end"
+    data-width="1920"
+    data-height="1080"
+    data-duration="3"
+  >
+    <style>
+      [data-composition-id="scene35-end"] {
+        position: relative;
+        width: 1920px;
+        height: 1080px;
+        background: #09090C;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        font-family: 'Inter', sans-serif;
+      }
+      [data-composition-id="scene35-end"] .top-bar {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 6px;
+        background: #DA2032;
+        transform-origin: left center;
+        transform: scaleX(0);
+      }
+      [data-composition-id="scene35-end"] .aia-logo {
+        font-size: 200px;
+        font-weight: 900;
+        color: #fff;
+        line-height: 1;
+        margin-bottom: 24px;
+        opacity: 0;
+        transform: scale(0.85);
+      }
+      [data-composition-id="scene35-end"] .red-underline {
+        width: 0;
+        height: 4px;
+        background: #DA2032;
+        margin-bottom: 32px;
+      }
+      [data-composition-id="scene35-end"] .tagline {
+        font-size: 26px;
+        color: #DA2032;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        font-weight: 500;
+        opacity: 0;
+      }
+      [data-composition-id="scene35-end"] .url {
+        position: absolute;
+        bottom: 48px;
+        right: 64px;
+        font-size: 22px;
+        color: rgba(255,255,255,0.4);
+        opacity: 0;
+      }
+      [data-composition-id="scene35-end"] .legal {
+        position: absolute;
+        bottom: 48px;
+        left: 64px;
+        font-size: 18px;
+        color: rgba(255,255,255,0.25);
+        opacity: 0;
+      }
+      [data-composition-id="scene35-end"] .fade {
+        position: absolute;
+        inset: 0;
+        background: #09090C;
+        opacity: 0;
+        pointer-events: none;
+      }
+    </style>
+
+    <div class="top-bar" id="s35-topbar"></div>
+    <div class="aia-logo" id="s35-aia">AIA</div>
+    <div class="red-underline" id="s35-underline"></div>
+    <div class="tagline" id="s35-tagline">Healthier, Longer, Better Lives.</div>
+    <div class="url" id="s35-url">aia.com.sg</div>
+    <div class="legal" id="s35-legal">AIA Singapore Pte. Ltd.</div>
+    <div class="fade" id="s35-fade"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      (function () {
+        const sc = '[data-composition-id="scene35-end"]';
+        const tl = gsap.timeline({ paused: true });
+
+        tl.to(sc + ' #s35-topbar', { scaleX: 1, duration: 0.5, ease: 'power2.inOut' }, 0.0)
+          .to(sc + ' #s35-aia', { opacity: 1, scale: 1, duration: 0.55, ease: 'back.out(1.2)' }, 0.3)
+          .to(sc + ' #s35-underline', { width: 180, duration: 0.4, ease: 'power2.inOut' }, 0.6)
+          .to(sc + ' #s35-tagline', { opacity: 1, duration: 0.4 }, 0.8)
+          .to(sc + ' #s35-url', { opacity: 1, duration: 0.35 }, 1.0)
+          .to(sc + ' #s35-legal', { opacity: 1, duration: 0.35 }, 1.0);
+        // No fade-out — final scene holds
+
+        window.__timelines = window.__timelines || {};
+        window.__timelines["scene35-end"] = tl;
+      })();
+    </script>
+  </div>
+</template>

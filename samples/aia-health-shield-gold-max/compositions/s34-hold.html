@@ -1,0 +1,85 @@
+<template id="scene34-hold-template">
+  <div
+    data-composition-id="scene34-hold"
+    data-width="1920"
+    data-height="1080"
+    data-duration="3"
+  >
+    <style>
+      [data-composition-id="scene34-hold"] {
+        position: relative;
+        width: 1920px;
+        height: 1080px;
+        background: #09090C;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        font-family: 'Inter', sans-serif;
+      }
+      [data-composition-id="scene34-hold"] .aia-healthshield {
+        font-size: 72px;
+        font-weight: 700;
+        color: #fff;
+        margin-bottom: 8px;
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      [data-composition-id="scene34-hold"] .gold-max {
+        font-size: 120px;
+        font-weight: 900;
+        color: #C9A84C;
+        letter-spacing: -0.03em;
+        line-height: 1;
+        margin-bottom: 36px;
+        opacity: 0;
+        transform: scale(0.9);
+      }
+      [data-composition-id="scene34-hold"] .gold-line {
+        width: 0;
+        height: 3px;
+        background: linear-gradient(90deg, transparent, #C9A84C, #E8D5A3, #C9A84C, transparent);
+        margin-bottom: 32px;
+      }
+      [data-composition-id="scene34-hold"] .shield-type {
+        font-size: 22px;
+        font-weight: 400;
+        color: rgba(255,255,255,0.4);
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        opacity: 0;
+      }
+      [data-composition-id="scene34-hold"] .fade {
+        position: absolute;
+        inset: 0;
+        background: #09090C;
+        opacity: 0;
+        pointer-events: none;
+      }
+    </style>
+
+    <div class="aia-healthshield" id="s34-title">AIA HealthShield</div>
+    <div class="gold-max" id="s34-goldmax">Gold Max</div>
+    <div class="gold-line" id="s34-line"></div>
+    <div class="shield-type" id="s34-type">Integrated Shield Plan</div>
+    <div class="fade" id="s34-fade"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      (function () {
+        const sc = '[data-composition-id="scene34-hold"]';
+        const tl = gsap.timeline({ paused: true });
+
+        tl.to(sc + ' #s34-title', { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }, 0.2)
+          .to(sc + ' #s34-goldmax', { opacity: 1, scale: 1, duration: 0.55, ease: 'back.out(1.1)' }, 0.4)
+          .to(sc + ' #s34-line', { width: 600, duration: 0.45, ease: 'power2.inOut' }, 0.7)
+          .to(sc + ' #s34-type', { opacity: 1, duration: 0.4 }, 0.9);
+        // No fade-out — penultimate scene holds
+
+        window.__timelines = window.__timelines || {};
+        window.__timelines["scene34-hold"] = tl;
+      })();
+    </script>
+  </div>
+</template>

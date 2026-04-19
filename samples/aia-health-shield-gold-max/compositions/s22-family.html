@@ -1,0 +1,145 @@
+<template id="scene22-family-template">
+  <div
+    data-composition-id="scene22-family"
+    data-width="1920"
+    data-height="1080"
+    data-duration="4"
+  >
+    <style>
+      [data-composition-id="scene22-family"] {
+        position: relative;
+        width: 1920px;
+        height: 1080px;
+        background: #09090C;
+        font-family: 'Inter', sans-serif;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+      }
+
+      [data-composition-id="scene22-family"] .vignette {
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(ellipse at center, rgba(218, 32, 50, 0.06) 0%, transparent 70%);
+        pointer-events: none;
+      }
+
+      [data-composition-id="scene22-family"] .inner {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0;
+        text-align: center;
+        position: relative;
+        z-index: 1;
+      }
+
+      [data-composition-id="scene22-family"] .eyebrow {
+        font-size: 20px;
+        font-weight: 600;
+        color: #DA2032;
+        text-transform: uppercase;
+        letter-spacing: 0.28em;
+        margin-bottom: 32px;
+        opacity: 0;
+      }
+
+      [data-composition-id="scene22-family"] .headline {
+        font-size: 88px;
+        font-weight: 800;
+        color: #ffffff;
+        line-height: 1.1;
+        margin-bottom: 44px;
+        opacity: 0;
+      }
+
+      [data-composition-id="scene22-family"] .gold-rule {
+        height: 5px;
+        width: 0;
+        background: linear-gradient(90deg, #C9A84C, #E8D5A3);
+        border-radius: 2px;
+        margin-bottom: 56px;
+      }
+
+      [data-composition-id="scene22-family"] .pills-row {
+        display: flex;
+        gap: 32px;
+        align-items: center;
+        margin-bottom: 56px;
+      }
+
+      [data-composition-id="scene22-family"] .pill {
+        border: 1px solid #C9A84C;
+        border-radius: 40px;
+        padding: 12px 40px;
+        font-size: 22px;
+        color: #C9A84C;
+        font-weight: 500;
+        opacity: 0;
+        transform-origin: center center;
+      }
+
+      [data-composition-id="scene22-family"] .bottom-line {
+        font-size: 26px;
+        color: rgba(255, 255, 255, 0.55);
+        text-align: center;
+        max-width: 1100px;
+        line-height: 1.5;
+        opacity: 0;
+      }
+
+      [data-composition-id="scene22-family"] .fade {
+        position: absolute;
+        inset: 0;
+        background: #09090C;
+        opacity: 0;
+        pointer-events: none;
+      }
+    </style>
+
+    <div class="vignette"></div>
+    <div class="inner">
+      <div class="eyebrow">Protect Everyone You Love</div>
+      <div class="headline">Coverage for the whole family.</div>
+      <div class="gold-rule"></div>
+      <div class="pills-row">
+        <div class="pill">Self</div>
+        <div class="pill">Spouse</div>
+        <div class="pill">Children</div>
+      </div>
+      <div class="bottom-line">From newborns to seniors — AIA HealthShield Gold Max covers all ages.</div>
+    </div>
+
+    <div class="fade"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      (function () {
+        const sc = '[data-composition-id="scene22-family"]';
+        const el = (cls) => document.querySelector(sc + ' ' + cls);
+        const els = (cls) => document.querySelectorAll(sc + ' ' + cls);
+
+        const tl = gsap.timeline({ paused: true });
+
+        gsap.set(el('.eyebrow'), { opacity: 0 });
+        gsap.set(el('.headline'), { y: 40, opacity: 0 });
+        gsap.set(el('.gold-rule'), { width: 0 });
+        gsap.set(els('.pill'), { scale: 0.85, opacity: 0 });
+        gsap.set(el('.bottom-line'), { opacity: 0 });
+        gsap.set(el('.fade'), { opacity: 0 });
+
+        tl
+          .to(el('.eyebrow'), { opacity: 1, duration: 0.3, ease: 'power2.out' }, 0.2)
+          .to(el('.headline'), { y: 0, opacity: 1, duration: 0.65, ease: 'power3.out' }, 0.4)
+          .to(el('.gold-rule'), { width: 560, duration: 0.6, ease: 'power3.out' }, 0.8)
+          .to(els('.pill'), { scale: 1, opacity: 1, duration: 0.45, ease: 'back.out(1.3)', stagger: 0.15 }, 1.0)
+          .to(el('.bottom-line'), { opacity: 1, duration: 0.5, ease: 'power2.out' }, 1.4)
+          .to(el('.fade'), { opacity: 1, duration: 0.4, ease: 'power2.inOut' }, 3.6);
+
+        window.__timelines = window.__timelines || {};
+        window.__timelines['scene22-family'] = tl;
+      })();
+    </script>
+  </div>
+</template>
