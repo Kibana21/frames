@@ -1,0 +1,109 @@
+<template id="scene30-digital-template">
+  <div
+    data-composition-id="scene30-digital"
+    data-width="1920"
+    data-height="1080"
+    data-duration="3.5"
+  >
+    <style>
+      [data-composition-id="scene30-digital"] {
+        position: relative;
+        width: 1920px;
+        height: 1080px;
+        background: #09090C;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        font-family: 'Inter', sans-serif;
+        gap: 0;
+      }
+      [data-composition-id="scene30-digital"] .url-text {
+        font-size: 72px;
+        font-weight: 700;
+        color: #fff;
+        letter-spacing: -0.01em;
+        margin-bottom: 56px;
+        opacity: 0;
+        transform: scale(0.85);
+      }
+      [data-composition-id="scene30-digital"] .buttons-row {
+        display: flex;
+        gap: 28px;
+        margin-bottom: 52px;
+      }
+      [data-composition-id="scene30-digital"] .btn-primary {
+        background: #DA2032;
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        padding: 20px 60px;
+        font-size: 28px;
+        font-weight: 700;
+        font-family: 'Inter', sans-serif;
+        cursor: pointer;
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      [data-composition-id="scene30-digital"] .btn-secondary {
+        background: transparent;
+        color: #fff;
+        border: 2px solid #fff;
+        border-radius: 8px;
+        padding: 20px 60px;
+        font-size: 28px;
+        font-weight: 700;
+        font-family: 'Inter', sans-serif;
+        cursor: pointer;
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      [data-composition-id="scene30-digital"] .below-text {
+        font-size: 20px;
+        color: rgba(255,255,255,0.4);
+        margin-bottom: 16px;
+        opacity: 0;
+      }
+      [data-composition-id="scene30-digital"] .app-text {
+        font-size: 18px;
+        color: #C9A84C;
+        opacity: 0;
+      }
+      [data-composition-id="scene30-digital"] .fade {
+        position: absolute;
+        inset: 0;
+        background: #09090C;
+        opacity: 0;
+        pointer-events: none;
+      }
+    </style>
+
+    <div class="url-text" id="s30-url">aia.com.sg/healthshield</div>
+    <div class="buttons-row">
+      <button class="btn-primary" id="s30-btn1">Get a Quote</button>
+      <button class="btn-secondary" id="s30-btn2">Learn More</button>
+    </div>
+    <div class="below-text" id="s30-below">Or scan the QR code on your AIA advisor's brochure</div>
+    <div class="app-text" id="s30-app">Available on iOS and Android: AIA+ App</div>
+    <div class="fade" id="s30-fade"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      (function () {
+        const sc = '[data-composition-id="scene30-digital"]';
+        const tl = gsap.timeline({ paused: true });
+
+        tl.to(sc + ' #s30-url', { opacity: 1, scale: 1, duration: 0.55, ease: 'back.out(1.4)' }, 0.2)
+          .to(sc + ' #s30-btn1', { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' }, 0.7)
+          .to(sc + ' #s30-btn2', { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' }, 0.85)
+          .to(sc + ' #s30-below', { opacity: 1, duration: 0.4 }, 1.1)
+          .to(sc + ' #s30-app', { opacity: 1, duration: 0.4 }, 1.3)
+          .to(sc + ' #s30-fade', { opacity: 1, duration: 0.4 }, 3.1);
+
+        window.__timelines = window.__timelines || {};
+        window.__timelines["scene30-digital"] = tl;
+      })();
+    </script>
+  </div>
+</template>

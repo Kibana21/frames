@@ -1,0 +1,49 @@
+name: Perf Regression Check
+
+on:
+  schedule:
+    - cron: "0 6 1 * *"   # monthly, 1st of month 06:00 UTC
+  workflow_dispatch:
+
+jobs:
+  perf-check:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: framecraft
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -e ".[dev]"
+
+      - name: Run perf harness
+        id: perf
+        run: python scripts/perf_harness.py --n 5 > perf-output.txt 2>&1
+        continue-on-error: true
+
+      - name: Upload perf report
+        uses: actions/upload-artifact@v4
+        with:
+          name: perf-report
+          path: framecraft/.perf/report-*.json
+
+      - name: Open issue on regression
+        if: steps.perf.outcome == 'failure'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const body = fs.readFileSync('framecraft/perf-output.txt', 'utf8');
+            github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: 'Perf regression detected',
+              body: `Monthly perf harness detected a regression (>20% p50).\n\n\`\`\`\n${body.slice(0, 8000)}\n\`\`\``,
+              labels: ['perf-regression'],
+            });

@@ -1,0 +1,15 @@
+<template id="scene-00-title-card-template">
+  <div data-composition-id="scene-00-title-card" data-start="0" data-width="1920" data-height="1080" data-duration="8.000">
+    <style>[data-composition-id="scene-00-title-card"] { width: 1920px; height: 1080px; background: #09090C; color: #FFFFFF; font-family: "Inter", sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; overflow: hidden; }[data-composition-id="scene-00-title-card"] .headline { font-size: 96px; font-weight: 800; text-align: center; letter-spacing: -0.02em; line-height: 1.05; margin: 0; opacity: 0; }[data-composition-id="scene-00-title-card"] .subtitle { font-size: 28px; font-weight: 400; text-align: center; opacity: 0; margin-top: 24px; }</style>
+    <h1 class="clip headline" data-start="0" data-duration="8.000" data-track-index="1">a barista discovers the coffee shop is the last on Earth</h1>
+    
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+      tl.to("[data-composition-id=\"scene-00-title-card\"] .headline", { opacity: 1, duration: 0.8, ease: "power2.out" }, 0);
+
+      window.__timelines["scene-00-title-card"] = tl;
+    </script>
+  </div>
+</template>

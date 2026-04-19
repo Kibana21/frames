@@ -1,0 +1,14 @@
+<template id="scene-01-end-card-template">
+  <div data-composition-id="scene-01-end-card" data-start="0" data-width="1920" data-height="1080" data-duration="12.000">
+    <style>[data-composition-id="scene-01-end-card"] { width: 1920px; height: 1080px; background: #09090C; color: #FFFFFF; font-family: "Inter", sans-serif; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }[data-composition-id="scene-01-end-card"] .tagline { font-size: 56px; font-weight: 500; letter-spacing: -0.01em; opacity: 0; transform: translateY(16px); margin: 0; }</style>
+    <p class="clip tagline" data-start="0" data-duration="12.000" data-track-index="1">Made with FrameCraft.</p>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+      tl.to("[data-composition-id=\"scene-01-end-card\"] .tagline", { opacity: 1, y: 0, duration: 0.9, ease: "power2.out" }, 0);
+
+      window.__timelines["scene-01-end-card"] = tl;
+    </script>
+  </div>
+</template>

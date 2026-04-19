@@ -1,0 +1,149 @@
+<template id="scene15-cancer-template">
+  <div
+    data-composition-id="scene15-cancer"
+    data-width="1920"
+    data-height="1080"
+    data-duration="4.5"
+  >
+    <style>
+      [data-composition-id="scene15-cancer"] {
+        position: relative;
+        width: 1920px;
+        height: 1080px;
+        background: #09090C;
+        font-family: 'Inter', sans-serif;
+        display: flex;
+        align-items: center;
+        overflow: hidden;
+      }
+
+      [data-composition-id="scene15-cancer"] .red-stripe {
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 8px;
+        background: #DA2032;
+      }
+
+      [data-composition-id="scene15-cancer"] .content {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        padding-left: 160px;
+        max-width: 1400px;
+        gap: 0;
+      }
+
+      [data-composition-id="scene15-cancer"] .eyebrow {
+        font-size: 20px;
+        font-weight: 600;
+        color: #DA2032;
+        text-transform: uppercase;
+        letter-spacing: 0.28em;
+        margin-bottom: 28px;
+        opacity: 0;
+      }
+
+      [data-composition-id="scene15-cancer"] .headline {
+        font-size: 80px;
+        font-weight: 800;
+        color: #ffffff;
+        line-height: 1.1;
+        margin-bottom: 40px;
+        opacity: 0;
+      }
+
+      [data-composition-id="scene15-cancer"] .gold-rule {
+        height: 5px;
+        width: 0;
+        background: linear-gradient(90deg, #C9A84C, #E8D5A3);
+        border-radius: 2px;
+        margin-bottom: 48px;
+      }
+
+      [data-composition-id="scene15-cancer"] .bullets {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        margin-bottom: 56px;
+      }
+
+      [data-composition-id="scene15-cancer"] .bullet {
+        font-size: 24px;
+        color: rgba(255, 255, 255, 0.75);
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        opacity: 0;
+      }
+
+      [data-composition-id="scene15-cancer"] .bullet::before {
+        content: '—';
+        color: #C9A84C;
+        font-weight: 700;
+        flex-shrink: 0;
+      }
+
+      [data-composition-id="scene15-cancer"] .bottom-note {
+        font-size: 20px;
+        color: rgba(255, 255, 255, 0.4);
+        font-style: italic;
+        opacity: 0;
+      }
+
+      [data-composition-id="scene15-cancer"] .fade {
+        position: absolute;
+        inset: 0;
+        background: #09090C;
+        opacity: 0;
+        pointer-events: none;
+      }
+    </style>
+
+    <div class="red-stripe"></div>
+    <div class="content">
+      <div class="eyebrow">Cancer Care Pro</div>
+      <div class="headline">Comprehensive Cancer Coverage.</div>
+      <div class="gold-rule"></div>
+      <div class="bullets">
+        <div class="bullet">Multiple primary cancer coverage</div>
+        <div class="bullet">Higher claim limits per policy year</div>
+        <div class="bullet">Chemotherapy, radiotherapy &amp; immunotherapy</div>
+        <div class="bullet">Outpatient cancer treatment included</div>
+      </div>
+      <div class="bottom-note">Available as a rider with AIA Max VitalHealth Pro</div>
+    </div>
+
+    <div class="fade"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      (function () {
+        const sc = '[data-composition-id="scene15-cancer"]';
+        const el = (cls) => document.querySelector(sc + ' ' + cls);
+        const els = (cls) => document.querySelectorAll(sc + ' ' + cls);
+
+        const tl = gsap.timeline({ paused: true });
+
+        gsap.set(el('.eyebrow'), { opacity: 0 });
+        gsap.set(el('.headline'), { x: -60, opacity: 0 });
+        gsap.set(el('.gold-rule'), { width: 0 });
+        gsap.set(els('.bullet'), { y: 18, opacity: 0 });
+        gsap.set(el('.bottom-note'), { opacity: 0 });
+        gsap.set(el('.fade'), { opacity: 0 });
+
+        tl
+          .to(el('.eyebrow'), { opacity: 1, duration: 0.15, ease: 'power2.out' }, 0)
+          .to(el('.headline'), { x: 0, opacity: 1, duration: 0.6, ease: 'power3.out' }, 0.3)
+          .to(el('.gold-rule'), { width: 520, duration: 0.55, ease: 'power3.out' }, 0.7)
+          .to(els('.bullet'), { y: 0, opacity: 1, duration: 0.5, ease: 'power2.out', stagger: 0.18 }, 0.85)
+          .to(el('.bottom-note'), { opacity: 1, duration: 0.5, ease: 'power2.out' }, 1.7)
+          .to(el('.fade'), { opacity: 1, duration: 0.4, ease: 'power2.inOut' }, 4.1);
+
+        window.__timelines = window.__timelines || {};
+        window.__timelines['scene15-cancer'] = tl;
+      })();
+    </script>
+  </div>
+</template>

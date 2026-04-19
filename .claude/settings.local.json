@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:hyperframes.heygen.com)",
+      "WebFetch(domain:hyperframes.mintlify.app)",
+      "Bash(python -m pytest tests/test_assembler.py tests/test_determinism.py -v)",
+      "Bash(python -m pytest tests/test_cli_render.py tests/test_cli_preview.py -v)",
+      "Bash(python -m pytest tests/test_trace_observability.py -v)",
+      "Bash(framecraft compose *)",
+      "Bash(python -c \"import json,sys; p=json.load\\(sys.stdin\\); [print\\(f'  scene {s[\\\\\"index\\\\\"]}: {s[\\\\\"block_id\\\\\"]} \\({s[\\\\\"duration\\\\\"]}s\\) props={list\\(s[\\\\\"block_props\\\\\"].keys\\(\\)\\)}'\\) for s in p['scenes']]\")"
+    ]
+  }
+}

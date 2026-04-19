@@ -1,0 +1,114 @@
+<template id="scene1-brand-template">
+  <div
+    data-composition-id="scene1-brand"
+    data-width="1920"
+    data-height="1080"
+    data-duration="3.5"
+  >
+    <div class="s1-canvas">
+      <!-- Red top bar -->
+      <div class="s1-top-bar"></div>
+
+      <!-- AIA letters -->
+      <div class="s1-center">
+        <div class="s1-letters">
+          <span id="s1-a1">A</span>
+          <span id="s1-i">I</span>
+          <span id="s1-a2">A</span>
+        </div>
+        <div class="s1-rule"></div>
+        <div class="s1-tagline">Healthier, Longer, Better Lives.</div>
+      </div>
+
+      <!-- Bottom fade -->
+      <div class="s1-fade-out"></div>
+    </div>
+
+    <style>
+      [data-composition-id="scene1-brand"] .s1-canvas {
+        width: 1920px;
+        height: 1080px;
+        background: #09090C;
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+      [data-composition-id="scene1-brand"] .s1-top-bar {
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 8px;
+        background: #DA2032;
+        transform-origin: left;
+      }
+      [data-composition-id="scene1-brand"] .s1-center {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      [data-composition-id="scene1-brand"] .s1-letters {
+        display: flex;
+        gap: 20px;
+        align-items: baseline;
+      }
+      [data-composition-id="scene1-brand"] .s1-letters span {
+        font-size: 260px;
+        font-weight: 900;
+        color: #ffffff;
+        line-height: 1;
+        letter-spacing: -0.02em;
+        display: inline-block;
+        opacity: 0;
+      }
+      [data-composition-id="scene1-brand"] .s1-rule {
+        width: 0;
+        height: 6px;
+        background: #DA2032;
+        margin-top: 10px;
+        border-radius: 3px;
+      }
+      [data-composition-id="scene1-brand"] .s1-tagline {
+        font-size: 28px;
+        font-weight: 400;
+        color: #DA2032;
+        letter-spacing: 0.3em;
+        text-transform: uppercase;
+        margin-top: 30px;
+        opacity: 0;
+      }
+      [data-composition-id="scene1-brand"] .s1-fade-out {
+        position: absolute;
+        inset: 0;
+        background: #09090C;
+        opacity: 0;
+        pointer-events: none;
+      }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      (function () {
+        const sc = '[data-composition-id="scene1-brand"]';
+        const tl = gsap.timeline({ paused: true });
+
+        gsap.set(`${sc} .s1-top-bar`, { scaleX: 0 });
+        gsap.set(`${sc} #s1-a1`, { y: -180 });
+        gsap.set(`${sc} #s1-i`,  { y: -180 });
+        gsap.set(`${sc} #s1-a2`, { y: -180 });
+
+        tl.to(`${sc} .s1-top-bar`, { scaleX: 1, duration: 0.5, ease: "expo.out" }, 0.0);
+        tl.to(`${sc} #s1-a1`, { opacity: 1, y: 0, duration: 0.6, ease: "expo.out" }, 0.15);
+        tl.to(`${sc} #s1-i`,  { opacity: 1, y: 0, duration: 0.6, ease: "expo.out" }, 0.28);
+        tl.to(`${sc} #s1-a2`, { opacity: 1, y: 0, duration: 0.6, ease: "expo.out" }, 0.41);
+        tl.to(`${sc} .s1-rule`, { width: 580, duration: 0.55, ease: "power3.out" }, 0.75);
+        tl.to(`${sc} .s1-tagline`, { opacity: 1, duration: 0.6, ease: "power2.out" }, 1.05);
+        tl.to(`${sc} .s1-fade-out`, { opacity: 1, duration: 0.45, ease: "power2.in" }, 3.05);
+
+        window.__timelines = window.__timelines || {};
+        window.__timelines["scene1-brand"] = tl;
+      })();
+    </script>
+  </div>
+</template>

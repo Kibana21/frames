@@ -1,0 +1,39 @@
+{
+  "version": 1,
+  "brief": {
+    "situation": "A product launch promo for a new AI-powered app",
+    "aspect": "16:9",
+    "duration": 8.0,
+    "fps": 30
+  },
+  "archetype": "product_promo",
+  "aspect": "16:9",
+  "canvas": [1920, 1080],
+  "duration": 8.0,
+  "scenes": [
+    {
+      "index": 0,
+      "block_id": "title-card",
+      "start": 0.0,
+      "duration": 5.0,
+      "track_index": 1,
+      "block_props": {
+        "headline": "Introducing Aria",
+        "subtitle": "AI that works for you"
+      },
+      "polished": {}
+    },
+    {
+      "index": 1,
+      "block_id": "end-card",
+      "start": 5.0,
+      "duration": 3.0,
+      "track_index": 1,
+      "block_props": {
+        "tagline": "Start free today"
+      },
+      "polished": {}
+    }
+  ],
+  "transitions": []
+}

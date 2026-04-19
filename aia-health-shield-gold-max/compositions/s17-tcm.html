@@ -1,0 +1,139 @@
+<template id="scene17-tcm-template">
+  <div
+    data-composition-id="scene17-tcm"
+    data-width="1920"
+    data-height="1080"
+    data-duration="3.5"
+  >
+    <style>
+      [data-composition-id="scene17-tcm"] {
+        position: relative;
+        width: 1920px;
+        height: 1080px;
+        background: #09090C;
+        font-family: 'Inter', sans-serif;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+      }
+
+      [data-composition-id="scene17-tcm"] .inner {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0;
+        text-align: center;
+      }
+
+      [data-composition-id="scene17-tcm"] .lotus-icon {
+        width: 100px;
+        height: 100px;
+        margin-bottom: 36px;
+        opacity: 0;
+        transform-origin: center center;
+      }
+
+      [data-composition-id="scene17-tcm"] .eyebrow {
+        font-size: 20px;
+        font-weight: 600;
+        color: #DA2032;
+        text-transform: uppercase;
+        letter-spacing: 0.28em;
+        margin-bottom: 24px;
+        opacity: 0;
+      }
+
+      [data-composition-id="scene17-tcm"] .headline {
+        font-size: 72px;
+        font-weight: 800;
+        color: #ffffff;
+        margin-bottom: 40px;
+        opacity: 0;
+      }
+
+      [data-composition-id="scene17-tcm"] .gold-rule {
+        height: 5px;
+        width: 0;
+        background: linear-gradient(90deg, #C9A84C, #E8D5A3);
+        border-radius: 2px;
+        margin-bottom: 48px;
+      }
+
+      [data-composition-id="scene17-tcm"] .description {
+        font-size: 30px;
+        color: rgba(255, 255, 255, 0.65);
+        text-align: center;
+        max-width: 1100px;
+        line-height: 1.55;
+        margin-bottom: 32px;
+        opacity: 0;
+      }
+
+      [data-composition-id="scene17-tcm"] .small-note {
+        font-size: 22px;
+        color: #C9A84C;
+        font-weight: 500;
+        opacity: 0;
+      }
+
+      [data-composition-id="scene17-tcm"] .fade {
+        position: absolute;
+        inset: 0;
+        background: #09090C;
+        opacity: 0;
+        pointer-events: none;
+      }
+    </style>
+
+    <div class="inner">
+      <svg class="lotus-icon" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="50" cy="50" r="12" stroke="#C9A84C" stroke-width="2.5" fill="none"/>
+        <!-- 6 petals -->
+        <ellipse cx="50" cy="22" rx="8" ry="18" stroke="#C9A84C" stroke-width="2" fill="none"/>
+        <ellipse cx="50" cy="78" rx="8" ry="18" stroke="#C9A84C" stroke-width="2" fill="none"/>
+        <ellipse cx="22" cy="50" rx="18" ry="8" stroke="#C9A84C" stroke-width="2" fill="none"/>
+        <ellipse cx="78" cy="50" rx="18" ry="8" stroke="#C9A84C" stroke-width="2" fill="none"/>
+        <ellipse cx="29.6" cy="29.6" rx="8" ry="18" stroke="#C9A84C" stroke-width="2" fill="none" transform="rotate(-45 29.6 29.6)"/>
+        <ellipse cx="70.4" cy="70.4" rx="8" ry="18" stroke="#C9A84C" stroke-width="2" fill="none" transform="rotate(-45 70.4 70.4)"/>
+      </svg>
+      <div class="eyebrow">Something Unique</div>
+      <div class="headline">Traditional Chinese Medicine</div>
+      <div class="gold-rule"></div>
+      <div class="description">AIA HealthShield Gold Max includes TCM treatment — a rare benefit in Integrated Shield Plans.</div>
+      <div class="small-note">Acupuncture, herbal medicine &amp; more</div>
+    </div>
+
+    <div class="fade"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      (function () {
+        const sc = '[data-composition-id="scene17-tcm"]';
+        const el = (cls) => document.querySelector(sc + ' ' + cls);
+
+        const tl = gsap.timeline({ paused: true });
+
+        gsap.set(el('.lotus-icon'), { scale: 0, opacity: 0 });
+        gsap.set(el('.eyebrow'), { opacity: 0 });
+        gsap.set(el('.headline'), { y: 30, opacity: 0 });
+        gsap.set(el('.gold-rule'), { width: 0 });
+        gsap.set(el('.description'), { opacity: 0 });
+        gsap.set(el('.small-note'), { opacity: 0 });
+        gsap.set(el('.fade'), { opacity: 0 });
+
+        tl
+          .to(el('.lotus-icon'), { scale: 1, opacity: 1, duration: 0.6, ease: 'back.out(1.3)' }, 0.1)
+          .to(el('.eyebrow'), { opacity: 1, duration: 0.4, ease: 'power2.out' }, 0.3)
+          .to(el('.headline'), { y: 0, opacity: 1, duration: 0.55, ease: 'power3.out' }, 0.45)
+          .to(el('.gold-rule'), { width: 560, duration: 0.55, ease: 'power3.out' }, 0.8)
+          .to(el('.description'), { opacity: 1, duration: 0.5, ease: 'power2.out' }, 0.95)
+          .to(el('.small-note'), { opacity: 1, duration: 0.5, ease: 'power2.out' }, 1.1)
+          .to(el('.fade'), { opacity: 1, duration: 0.4, ease: 'power2.inOut' }, 3.1);
+
+        window.__timelines = window.__timelines || {};
+        window.__timelines['scene17-tcm'] = tl;
+      })();
+    </script>
+  </div>
+</template>

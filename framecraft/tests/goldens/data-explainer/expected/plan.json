@@ -1,0 +1,49 @@
+{
+  "version": 1,
+  "brief": {
+    "situation": "15-second explainer of how our energy usage dropped 40% after the switch to solar",
+    "aspect": "16:9",
+    "duration": 20.0,
+    "fps": 30,
+    "music_volume": 0.4
+  },
+  "archetype": "narrative_scene",
+  "aspect": "16:9",
+  "canvas": [
+    1920,
+    1080
+  ],
+  "duration": 20.0,
+  "scenes": [
+    {
+      "index": 0,
+      "block_id": "title-card",
+      "start": 0.0,
+      "duration": 8.0,
+      "track_index": 1,
+      "block_props": {
+        "headline": "15-second explainer of how our energy usage dropped 40% after the switch to",
+        "subtitle": "solar",
+        "bg": "#09090C",
+        "fg": "#FFFFFF",
+        "font": "Inter"
+      },
+      "polished": {}
+    },
+    {
+      "index": 1,
+      "block_id": "end-card",
+      "start": 8.0,
+      "duration": 12.0,
+      "track_index": 1,
+      "block_props": {
+        "tagline": "Made with FrameCraft.",
+        "bg": "#09090C",
+        "fg": "#FFFFFF",
+        "font": "Inter"
+      },
+      "polished": {}
+    }
+  ],
+  "transitions": []
+}

@@ -1,0 +1,135 @@
+<template id="scene25-apply-template">
+  <div
+    data-composition-id="scene25-apply"
+    data-width="1920"
+    data-height="1080"
+    data-duration="3.5"
+  >
+    <style>
+      [data-composition-id="scene25-apply"] {
+        position: relative;
+        width: 1920px;
+        height: 1080px;
+        background: #09090C;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        font-family: 'Inter', sans-serif;
+      }
+      [data-composition-id="scene25-apply"] .eyebrow {
+        font-size: 18px;
+        font-weight: 700;
+        color: #DA2032;
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+        margin-bottom: 24px;
+        opacity: 0;
+      }
+      [data-composition-id="scene25-apply"] .headline {
+        font-size: 72px;
+        font-weight: 800;
+        color: #fff;
+        margin-bottom: 72px;
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      [data-composition-id="scene25-apply"] .steps-row {
+        display: flex;
+        align-items: center;
+        gap: 0;
+        margin-bottom: 56px;
+      }
+      [data-composition-id="scene25-apply"] .step {
+        width: 420px;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        opacity: 0;
+        transform: translateY(25px);
+      }
+      [data-composition-id="scene25-apply"] .step-number {
+        font-size: 80px;
+        font-weight: 900;
+        color: #DA2032;
+        line-height: 1;
+        margin-bottom: 16px;
+      }
+      [data-composition-id="scene25-apply"] .step-title {
+        font-size: 28px;
+        font-weight: 600;
+        color: #fff;
+        margin-bottom: 10px;
+      }
+      [data-composition-id="scene25-apply"] .step-desc {
+        font-size: 18px;
+        color: rgba(255,255,255,0.5);
+      }
+      [data-composition-id="scene25-apply"] .arrow {
+        font-size: 30px;
+        color: rgba(255,255,255,0.3);
+        margin: 0 24px;
+        opacity: 0;
+        padding-bottom: 60px;
+      }
+      [data-composition-id="scene25-apply"] .bottom-line {
+        font-size: 22px;
+        color: #C9A84C;
+        opacity: 0;
+      }
+      [data-composition-id="scene25-apply"] .fade {
+        position: absolute;
+        inset: 0;
+        background: #09090C;
+        opacity: 0;
+        pointer-events: none;
+      }
+    </style>
+
+    <div class="eyebrow">Getting Covered is Simple</div>
+    <div class="headline">3 steps to protect yourself.</div>
+    <div class="steps-row">
+      <div class="step" id="s25-step1">
+        <div class="step-number">1</div>
+        <div class="step-title">Speak to an advisor</div>
+        <div class="step-desc">Get a personalized recommendation</div>
+      </div>
+      <div class="arrow" id="s25-arrow1">→</div>
+      <div class="step" id="s25-step2">
+        <div class="step-number">2</div>
+        <div class="step-title">Choose your plan</div>
+        <div class="step-desc">A, B, or B Lite</div>
+      </div>
+      <div class="arrow" id="s25-arrow2">→</div>
+      <div class="step" id="s25-step3">
+        <div class="step-number">3</div>
+        <div class="step-title">Apply with MediSave</div>
+        <div class="step-desc">Premiums from CPF account</div>
+      </div>
+    </div>
+    <div class="bottom-line">Coverage can start immediately.</div>
+    <div class="fade" id="s25-fade"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      (function () {
+        const sc = '[data-composition-id="scene25-apply"]';
+        const tl = gsap.timeline({ paused: true });
+
+        tl.to(sc + ' .eyebrow', { opacity: 1, duration: 0.4 }, 0.2)
+          .to(sc + ' .headline', { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }, 0.35)
+          .to(sc + ' #s25-step1', { opacity: 1, y: 0, duration: 0.45, ease: 'power2.out' }, 0.75)
+          .to(sc + ' #s25-step2', { opacity: 1, y: 0, duration: 0.45, ease: 'power2.out' }, 0.95)
+          .to(sc + ' #s25-step3', { opacity: 1, y: 0, duration: 0.45, ease: 'power2.out' }, 1.15)
+          .to(sc + ' #s25-arrow1', { opacity: 1, duration: 0.3 }, 1.2)
+          .to(sc + ' #s25-arrow2', { opacity: 1, duration: 0.3 }, 1.25)
+          .to(sc + ' .bottom-line', { opacity: 1, duration: 0.4 }, 1.3)
+          .to(sc + ' #s25-fade', { opacity: 1, duration: 0.4 }, 3.1);
+
+        window.__timelines = window.__timelines || {};
+        window.__timelines["scene25-apply"] = tl;
+      })();
+    </script>
+  </div>
+</template>

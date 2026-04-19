@@ -1,0 +1,7 @@
+{
+  "generated_at": "2026-04-18T00:00:00Z",
+  "schema": 1,
+  "sources": [],
+  "primer_sha256": "placeholder",
+  "note": "M0 placeholder. Real primer lands in M1 via scripts/snapshot_primer.py."
+}
