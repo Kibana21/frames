@@ -87,7 +87,7 @@ def compose(
             music_volume=music_volume,
         )
 
-        out_dir = (out or Path.cwd() / "output" / _slug(situation)).resolve()
+        out_dir = (out or _workspace_root() / "output" / _slug(situation)).resolve()
 
         # --- Step 1: scaffold
         _console.print(f"[1/5] Scaffolding at [bold]{out_dir}[/bold]…")
@@ -239,6 +239,29 @@ def _parse_archetype(value: str) -> Archetype | None:
         raise FrameCraftExit(
             ExitCode.USAGE, f"--archetype {value!r} invalid. Valid: {valid}"
         ) from e
+
+
+def _workspace_root() -> Path:
+    """Walk up from CWD to find the workspace root.
+
+    The workspace root is the directory that *contains* the framecraft package
+    (i.e. has a `framecraft/` or `pyproject.toml` subdirectory/file at its
+    level). Falls back to CWD if nothing is found.
+    """
+    current = Path.cwd()
+    home = Path.home()
+    while current != home and current != current.parent:
+        # If we're inside framecraft/, the root is one level up
+        if (current / "pyproject.toml").exists() and (current.parent / "output").parent != current:
+            # We're inside the framecraft package dir — go up one level
+            if current.name == "framecraft":
+                return current.parent
+            return current
+        # If CWD contains a framecraft/ subdirectory, this IS the root
+        if (current / "framecraft").is_dir():
+            return current
+        current = current.parent
+    return Path.cwd()
 
 
 def _slug(s: str) -> str:
