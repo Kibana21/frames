@@ -1,0 +1,1661 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FrameCraft — Technology Overview</title>
+<style>
+  :root {
+    --ink:       #1a1a1a;
+    --ink-soft:  #4a4a4a;
+    --muted:     #7a7a7a;
+    --rule:      #e4e2dd;
+    --bg:        #faf7f2;
+    --card:      #ffffff;
+    --brand:     #d31145;
+    --brand-soft:#f5dde0;
+    --accent:    #e86c29;
+    --ok:        #1f7a3d;
+    --warn:      #b8660a;
+    --code-bg:   #1b1d23;
+    --code-ink:  #e9edf5;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--ink); font-family: "Inter", -apple-system, BlinkMacSystemFont, system-ui, sans-serif; -webkit-font-smoothing: antialiased; line-height: 1.55; }
+  body { font-size: 16px; }
+  .wrap { display: grid; grid-template-columns: 260px minmax(0, 1fr); max-width: 1400px; margin: 0 auto; gap: 0; }
+  nav.toc {
+    position: sticky; top: 0; align-self: start; height: 100vh; overflow-y: auto;
+    padding: 40px 24px; border-right: 1px solid var(--rule);
+    font-size: 13.5px;
+  }
+  nav.toc h2 { font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); margin: 0 0 14px; font-weight: 700; }
+  nav.toc a { display: block; padding: 5px 0; color: var(--ink-soft); text-decoration: none; border-left: 2px solid transparent; padding-left: 10px; margin-left: -10px; }
+  nav.toc a:hover { color: var(--brand); border-left-color: var(--brand); }
+  nav.toc .group { margin-top: 22px; }
+  main { padding: 64px 72px 120px; min-width: 0; }
+  .hero { border-bottom: 1px solid var(--rule); padding-bottom: 48px; margin-bottom: 64px; }
+  .hero .kicker { font-size: 13px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--brand); font-weight: 700; }
+  .hero h1 { font-size: 52px; line-height: 1.04; font-weight: 800; letter-spacing: -0.02em; margin: 14px 0 20px; color: var(--ink); }
+  .hero .lede { font-size: 20px; color: var(--ink-soft); max-width: 800px; margin: 0; }
+  .hero .meta { font-size: 13px; color: var(--muted); margin-top: 28px; font-family: "JetBrains Mono", "SF Mono", Menlo, monospace; }
+  h2 { font-size: 30px; font-weight: 800; letter-spacing: -0.01em; margin: 64px 0 14px; color: var(--ink); scroll-margin-top: 20px; }
+  h2 .n { display: inline-block; color: var(--brand); font-variant-numeric: tabular-nums; margin-right: 10px; }
+  h3 { font-size: 20px; font-weight: 700; margin: 32px 0 10px; color: var(--ink); scroll-margin-top: 20px; }
+  h4 { font-size: 15px; font-weight: 700; margin: 22px 0 8px; color: var(--ink); text-transform: uppercase; letter-spacing: 0.06em; }
+  p { margin: 10px 0 14px; color: var(--ink-soft); }
+  ul, ol { margin: 8px 0 16px; padding-left: 22px; color: var(--ink-soft); }
+  li { margin: 5px 0; }
+  strong { color: var(--ink); font-weight: 700; }
+  code { font-family: "JetBrains Mono", "SF Mono", Menlo, monospace; font-size: 13.5px; background: #efece6; color: var(--ink); padding: 1.5px 6px; border-radius: 3px; }
+  pre { background: var(--code-bg); color: var(--code-ink); padding: 18px 22px; border-radius: 8px; overflow-x: auto; font-size: 13px; line-height: 1.55; margin: 12px 0 20px; }
+  pre code { background: transparent; padding: 0; color: inherit; }
+  .card { background: var(--card); border: 1px solid var(--rule); border-radius: 10px; padding: 24px 28px; margin: 16px 0; }
+  .card.accent { border-left: 4px solid var(--brand); }
+  .card.warn { border-left: 4px solid var(--warn); background: #fcf6ec; }
+  .card.ok { border-left: 4px solid var(--ok); background: #f2f9f4; }
+  .card h4 { margin-top: 0; color: var(--brand); text-transform: none; letter-spacing: 0; font-size: 14px; }
+  table { width: 100%; border-collapse: collapse; margin: 14px 0 22px; font-size: 14px; }
+  th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+  th { background: #f0ece4; font-weight: 700; font-size: 12px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink-soft); }
+  td code { font-size: 12.5px; }
+  .pipe { background: var(--card); border: 1px solid var(--rule); border-radius: 10px; padding: 26px; margin: 22px 0 28px; overflow-x: auto; }
+  .pipe pre { background: transparent; color: var(--ink); margin: 0; padding: 0; font-size: 12.5px; line-height: 1.5; font-family: "JetBrains Mono", "SF Mono", Menlo, monospace; }
+  .stage-grid { display: grid; grid-template-columns: 120px 1fr; gap: 16px 28px; margin: 14px 0 22px; }
+  .stage-grid .lbl { color: var(--brand); font-weight: 700; text-transform: uppercase; font-size: 12px; letter-spacing: 0.08em; padding-top: 3px; }
+  .rules-table td { font-size: 13.5px; }
+  .rules-table code { font-size: 12px; }
+  .metric { display: inline-block; background: var(--brand-soft); color: var(--brand); padding: 2px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; letter-spacing: 0.03em; }
+  .metric.ok { background: #dcefe1; color: var(--ok); }
+  .metric.warn { background: #fbe8cf; color: var(--warn); }
+  .chip { display: inline-block; background: #efece6; color: var(--ink-soft); padding: 1px 9px; border-radius: 999px; font-size: 12px; font-weight: 600; margin-right: 4px; }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  @media (max-width: 900px) {
+    .wrap { grid-template-columns: 1fr; }
+    nav.toc { position: static; height: auto; border-right: none; border-bottom: 1px solid var(--rule); padding: 24px; }
+    main { padding: 24px 20px 80px; }
+    .two-col { grid-template-columns: 1fr; }
+    .hero h1 { font-size: 36px; }
+  }
+  footer { margin-top: 80px; padding-top: 24px; border-top: 1px solid var(--rule); color: var(--muted); font-size: 13px; }
+
+  /* SVG diagrams */
+  .diagram { background: var(--card); border: 1px solid var(--rule); border-radius: 12px; padding: 24px; margin: 22px 0 28px; overflow-x: auto; }
+  .diagram svg { display: block; margin: 0 auto; max-width: 100%; height: auto; }
+  .diagram .caption { font-size: 13px; color: var(--muted); text-align: center; margin-top: 14px; font-style: italic; }
+  .legend { display: flex; flex-wrap: wrap; gap: 14px 24px; justify-content: center; margin: 14px 0 4px; font-size: 12.5px; color: var(--ink-soft); }
+  .legend .sw { display: inline-block; width: 14px; height: 14px; border-radius: 3px; vertical-align: middle; margin-right: 6px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+<nav class="toc">
+  <h2>Contents</h2>
+  <a href="#exec">Executive summary</a>
+  <a href="#problem">The problem</a>
+  <a href="#architecture">Architecture</a>
+  <div class="group">
+    <h2>Pipeline stages</h2>
+    <a href="#stage-bible">1 · Story Bible</a>
+    <a href="#stage-plan">2 · Scene graph</a>
+    <a href="#stage-author">3 · Per-scene Author</a>
+    <a href="#stage-validator">4 · Validator gate</a>
+    <a href="#stage-fallback">5 · Rich-safe fallback</a>
+    <a href="#stage-assembler">6 · Assembler</a>
+    <a href="#stage-lint">7 · Lint + repair</a>
+    <a href="#stage-render">8 · Render</a>
+  </div>
+  <div class="group">
+    <h2>Deep dives</h2>
+    <a href="#rules">Validator rules catalogue</a>
+    <a href="#bible-schema">Story Bible schema</a>
+    <a href="#exhibits">Data exhibits</a>
+    <a href="#brand">Brand system injection</a>
+    <a href="#seams">Scene-to-scene seams</a>
+    <a href="#motion">Motion vocabulary</a>
+  </div>
+  <div class="group">
+    <h2>Ops</h2>
+    <a href="#casestudy">Case study: AIA Gold Max</a>
+    <a href="#cost">Cost & latency</a>
+    <a href="#stack">Tech stack</a>
+    <a href="#roadmap">Roadmap</a>
+    <a href="#code">Code map</a>
+  </div>
+</nav>
+
+<main>
+
+<section class="hero">
+  <div class="kicker">FrameCraft — Technology Overview</div>
+  <h1>One sentence in, one brand-aware motion-graphics video out.</h1>
+  <p class="lede">FrameCraft plans a film as a structured narrative, writes the HTML/CSS/GSAP for every scene using an LLM, self-validates against ~14 runtime-safety and aesthetic rules, and hands the result to a deterministic renderer for MP4 output. Zero designers in the loop.</p>
+  <div class="meta">doc v1 · author-side pipeline through scene render · code revisions v4 → v10</div>
+</section>
+
+<section id="exec">
+<h2><span class="n">§1</span>Executive summary</h2>
+
+<p>A brand video traditionally costs weeks and tens of thousands of dollars: a designer, an animator, a copywriter, and rounds of feedback. FrameCraft compresses that into <strong>two LLM-driven passes and ~$0.10 per 30-second film</strong>, with every scene authored as bespoke HTML/CSS/GSAP motion graphics.</p>
+
+<p>The technology has three distinctive characteristics:</p>
+
+<ol>
+  <li><strong>Story-first planning.</strong> A dedicated LLM pass produces a <em>Story Bible</em> for the whole film — thesis, weighted pillars, scene-level copy ledger, data exhibits, recurring motif — before any HTML is written.</li>
+  <li><strong>LLM-as-motion-designer.</strong> Each scene is authored in <em>three</em> LLM passes (design brief → HTML execution → elevation polish) against a rich motion vocabulary and a brand-aware palette.</li>
+  <li><strong>Self-validating output.</strong> Every scene is rejected if it contains any of ~14 known runtime or aesthetic failure modes. The LLM gets one retry; on second failure, a <em>rich-safe fallback</em> renders the scene deterministically from the bible's copy ledger — the film never ships a broken scene.</li>
+</ol>
+
+<p>The output is a Hyperframes-compatible project: 7 scenes × ~400 lines of HTML, 20+ animated elements per scene, 25+ GSAP tweens per scene, a validated MP4.</p>
+</section>
+
+<section id="problem">
+<h2><span class="n">§2</span>The problem FrameCraft solves</h2>
+
+<div class="two-col">
+  <div>
+    <h4>Today's workflow</h4>
+    <ul>
+      <li>Brief → creative director → storyboard → rounds of revisions</li>
+      <li>Designer builds in After Effects / Figma → manual export</li>
+      <li>Each copy change = full re-authoring pass</li>
+      <li>Brand variants = linear cost multiplier</li>
+      <li>Typical turnaround: 1–3 weeks per 30s film</li>
+    </ul>
+  </div>
+  <div>
+    <h4>With FrameCraft</h4>
+    <ul>
+      <li>Brief → CLI → MP4 in ~8 minutes</li>
+      <li>Every scene authored as code — diffable, versionable, testable</li>
+      <li>Copy change = edit <code>plan.json</code> → <code>framecraft from-plan … --render</code></li>
+      <li>Brand variants = <code>--n-variants 5</code></li>
+      <li>Cost per 30s film: ~$0.05–0.15</li>
+    </ul>
+  </div>
+</div>
+
+<p>This doesn't replace top-tier bespoke work, but it collapses <strong>concept→draft</strong> and serves every "we need a 30-second film for X by Thursday" situation.</p>
+</section>
+
+<section id="architecture">
+<h2><span class="n">§3</span>Architecture</h2>
+
+<p>FrameCraft runs three sequential phases — <strong>Planning</strong>, <strong>Authoring</strong>, <strong>Assembly &amp; Render</strong> — across eight stages. Red badges are LLM-driven; charcoal badges are deterministic. The green fallback path activates when the validator rejects two LLM attempts.</p>
+
+<div class="diagram">
+<svg viewBox="0 0 1000 1160" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="FrameCraft 8-stage pipeline">
+  <defs>
+    <marker id="arr1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#1a1a1a"/>
+    </marker>
+    <marker id="arr1-soft" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#7a7a7a"/>
+    </marker>
+    <marker id="arr1-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#1f7a3d"/>
+    </marker>
+    <linearGradient id="llm-grad" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0%" stop-color="#fef3f5"/>
+      <stop offset="100%" stop-color="#fce6ea"/>
+    </linearGradient>
+    <linearGradient id="pure-grad" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0%" stop-color="#f7f5f0"/>
+      <stop offset="100%" stop-color="#ece9e2"/>
+    </linearGradient>
+    <linearGradient id="fb-grad" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0%" stop-color="#eaf5ec"/>
+      <stop offset="100%" stop-color="#d9eedc"/>
+    </linearGradient>
+    <filter id="soft-shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="1.5" stdDeviation="2.5" flood-color="#000" flood-opacity="0.08"/>
+    </filter>
+  </defs>
+
+  <!-- Phase bands (background) -->
+  <rect x="20" y="100" width="960" height="180" rx="14" fill="#fafaf7" stroke="#eeebe4"/>
+  <rect x="20" y="296" width="960" height="480" rx="14" fill="#fafaf7" stroke="#eeebe4"/>
+  <rect x="20" y="792" width="960" height="348" rx="14" fill="#fafaf7" stroke="#eeebe4"/>
+
+  <!-- Phase labels -->
+  <text x="42" y="124" font-family="Inter" font-weight="800" font-size="11" letter-spacing="0.18em" fill="#d31145">PHASE · 1</text>
+  <text x="42" y="140" font-family="Inter" font-weight="800" font-size="18" fill="#1a1a1a">Planning</text>
+  <text x="42" y="158" font-family="Inter" font-size="12" fill="#7a7a7a">produce the film's narrative blueprint</text>
+
+  <text x="42" y="320" font-family="Inter" font-weight="800" font-size="11" letter-spacing="0.18em" fill="#d31145">PHASE · 2</text>
+  <text x="42" y="336" font-family="Inter" font-weight="800" font-size="18" fill="#1a1a1a">Authoring</text>
+  <text x="42" y="354" font-family="Inter" font-size="12" fill="#7a7a7a">write HTML/CSS/GSAP per scene</text>
+
+  <text x="42" y="816" font-family="Inter" font-weight="800" font-size="11" letter-spacing="0.18em" fill="#d31145">PHASE · 3</text>
+  <text x="42" y="832" font-family="Inter" font-weight="800" font-size="18" fill="#1a1a1a">Assembly &amp; Render</text>
+  <text x="42" y="850" font-family="Inter" font-size="12" fill="#7a7a7a">write files, lint, capture frames, mux MP4</text>
+
+  <!-- Input -->
+  <g filter="url(#soft-shadow)">
+    <rect x="280" y="22" width="440" height="60" rx="30" fill="#ffffff" stroke="#d0cec8" stroke-width="1.2"/>
+    <circle cx="318" cy="52" r="15" fill="#1a1a1a"/>
+    <text x="318" y="57" text-anchor="middle" font-family="Inter" font-weight="800" font-size="14" fill="#ffffff">▸</text>
+    <text x="345" y="47" font-family="Inter" font-weight="700" font-size="13" fill="#1a1a1a">USER SITUATION</text>
+    <text x="345" y="64" font-family="Inter" font-size="11.5" fill="#6a6a6a">"30-second AIA Gold Max brand film…"</text>
+  </g>
+  <path d="M 500 84 L 500 106" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#arr1)"/>
+
+  <!-- ====== PHASE 1: Planning ====== -->
+
+  <!-- Stage 1: Story Bible -->
+  <g filter="url(#soft-shadow)">
+    <rect x="200" y="170" width="580" height="94" rx="12" fill="url(#llm-grad)" stroke="#e9b5ba" stroke-width="1.2"/>
+    <circle cx="230" cy="217" r="18" fill="#d31145"/>
+    <text x="230" y="222" text-anchor="middle" font-family="Inter" font-weight="800" font-size="15" fill="#ffffff">1</text>
+    <text x="260" y="204" font-family="Inter" font-weight="700" font-size="16" fill="#1a1a1a">Story Bible</text>
+    <rect x="258" y="213" width="56" height="18" rx="4" fill="#d31145"/>
+    <text x="286" y="226" text-anchor="middle" font-family="Inter" font-weight="700" font-size="10" fill="#ffffff" letter-spacing="0.1em">LLM</text>
+    <text x="260" y="246" font-family="Inter" font-size="12" fill="#4a4a4a">thesis · pillars (tier-weighted) · scenes · exhibits · motif arc</text>
+    <text x="260" y="261" font-family="Inter" font-size="11.5" fill="#6a6a6a">pydantic-validated · one-shot retry on cross-ref failure</text>
+
+    <!-- output annotation -->
+    <line x1="600" y1="198" x2="640" y2="198" stroke="#c9c6bf" stroke-width="1" stroke-dasharray="3 3"/>
+    <text x="648" y="194" font-family="Inter" font-weight="700" font-size="10" fill="#6a6a6a" letter-spacing="0.06em">PRODUCES</text>
+    <text x="648" y="210" font-family="JetBrains Mono, monospace" font-size="10.5" fill="#1a1a1a">story-bible.json</text>
+    <text x="648" y="224" font-family="Inter" font-size="10" fill="#7a7a7a">~15s · ~$0.015</text>
+  </g>
+
+  <!-- connector -->
+  <path d="M 500 264 L 500 304" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#arr1)"/>
+
+  <!-- ====== PHASE 2: Authoring ====== -->
+
+  <!-- Stage 2: Scene Graph -->
+  <g filter="url(#soft-shadow)">
+    <rect x="200" y="310" width="580" height="74" rx="12" fill="url(#pure-grad)" stroke="#d0cec8" stroke-width="1.2"/>
+    <circle cx="230" cy="347" r="18" fill="#4a4a4a"/>
+    <text x="230" y="352" text-anchor="middle" font-family="Inter" font-weight="800" font-size="15" fill="#ffffff">2</text>
+    <text x="260" y="334" font-family="Inter" font-weight="700" font-size="16" fill="#1a1a1a">Scene Graph</text>
+    <rect x="258" y="343" width="56" height="18" rx="4" fill="#4a4a4a"/>
+    <text x="286" y="356" text-anchor="middle" font-family="Inter" font-weight="700" font-size="10" fill="#ffffff" letter-spacing="0.1em">PURE</text>
+    <text x="260" y="376" font-family="Inter" font-size="12" fill="#4a4a4a">bible_to_plan() — role→block_id · durations · copy-seeded props</text>
+
+    <line x1="600" y1="340" x2="640" y2="340" stroke="#c9c6bf" stroke-width="1" stroke-dasharray="3 3"/>
+    <text x="648" y="336" font-family="Inter" font-weight="700" font-size="10" fill="#6a6a6a" letter-spacing="0.06em">PRODUCES</text>
+    <text x="648" y="352" font-family="JetBrains Mono, monospace" font-size="10.5" fill="#1a1a1a">plan.json</text>
+    <text x="648" y="366" font-family="Inter" font-size="10" fill="#7a7a7a">≪1s · no LLM</text>
+  </g>
+  <text x="500" y="406" text-anchor="middle" font-family="Inter" font-size="11" font-style="italic" fill="#7a7a7a">loop for each of N scenes</text>
+  <path d="M 500 384 L 500 420" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#arr1)"/>
+
+  <!-- Stage 3: Per-scene Author -->
+  <g filter="url(#soft-shadow)">
+    <rect x="200" y="424" width="580" height="116" rx="12" fill="url(#llm-grad)" stroke="#e9b5ba" stroke-width="1.2"/>
+    <circle cx="230" cy="472" r="18" fill="#d31145"/>
+    <text x="230" y="477" text-anchor="middle" font-family="Inter" font-weight="800" font-size="15" fill="#ffffff">3</text>
+    <text x="260" y="459" font-family="Inter" font-weight="700" font-size="16" fill="#1a1a1a">Per-scene Author</text>
+    <rect x="258" y="468" width="76" height="18" rx="4" fill="#d31145"/>
+    <text x="296" y="481" text-anchor="middle" font-family="Inter" font-weight="700" font-size="10" fill="#ffffff" letter-spacing="0.08em">LLM × 3</text>
+
+    <!-- Inner 3-pass mini flow -->
+    <g transform="translate(260, 498)">
+      <rect x="0" y="0" width="100" height="28" rx="5" fill="#ffffff" stroke="#e9b5ba"/>
+      <text x="50" y="12" text-anchor="middle" font-family="Inter" font-weight="700" font-size="10" fill="#d31145">Pass 1</text>
+      <text x="50" y="23" text-anchor="middle" font-family="Inter" font-size="9.5" fill="#4a4a4a">design brief</text>
+      <path d="M 100 14 L 116 14" stroke="#4a4a4a" stroke-width="1.2" marker-end="url(#arr1)"/>
+
+      <rect x="118" y="0" width="100" height="28" rx="5" fill="#ffffff" stroke="#e9b5ba"/>
+      <text x="168" y="12" text-anchor="middle" font-family="Inter" font-weight="700" font-size="10" fill="#d31145">Pass 2</text>
+      <text x="168" y="23" text-anchor="middle" font-family="Inter" font-size="9.5" fill="#4a4a4a">HTML execution</text>
+      <path d="M 218 14 L 234 14" stroke="#4a4a4a" stroke-width="1.2" marker-end="url(#arr1)"/>
+
+      <rect x="236" y="0" width="100" height="28" rx="5" fill="#ffffff" stroke="#e9b5ba"/>
+      <text x="286" y="12" text-anchor="middle" font-family="Inter" font-weight="700" font-size="10" fill="#d31145">Pass 3</text>
+      <text x="286" y="23" text-anchor="middle" font-family="Inter" font-size="9.5" fill="#4a4a4a">elevation (+2 elts)</text>
+    </g>
+
+    <line x1="600" y1="459" x2="640" y2="459" stroke="#c9c6bf" stroke-width="1" stroke-dasharray="3 3"/>
+    <text x="648" y="455" font-family="Inter" font-weight="700" font-size="10" fill="#6a6a6a" letter-spacing="0.06em">PRODUCES</text>
+    <text x="648" y="471" font-family="JetBrains Mono, monospace" font-size="10.5" fill="#1a1a1a">scene-NN.html</text>
+    <text x="648" y="485" font-family="Inter" font-size="10" fill="#7a7a7a">~60–90s · ~$0.012/scene</text>
+    <text x="648" y="501" font-family="Inter" font-size="10" fill="#7a7a7a">20+ elts · 25+ tweens</text>
+  </g>
+
+  <path d="M 500 540 L 500 572" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#arr1)"/>
+
+  <!-- Stage 4: Validator gate -->
+  <g filter="url(#soft-shadow)">
+    <rect x="200" y="576" width="580" height="82" rx="12" fill="url(#pure-grad)" stroke="#d0cec8" stroke-width="1.2"/>
+    <circle cx="230" cy="617" r="18" fill="#4a4a4a"/>
+    <text x="230" y="622" text-anchor="middle" font-family="Inter" font-weight="800" font-size="15" fill="#ffffff">4</text>
+    <text x="260" y="604" font-family="Inter" font-weight="700" font-size="16" fill="#1a1a1a">Validator gate</text>
+    <rect x="258" y="613" width="56" height="18" rx="4" fill="#4a4a4a"/>
+    <text x="286" y="626" text-anchor="middle" font-family="Inter" font-weight="700" font-size="10" fill="#ffffff" letter-spacing="0.1em">PURE</text>
+    <text x="260" y="646" font-family="Inter" font-size="12" fill="#4a4a4a">14 rules · runtime · aesthetic · track-overlap · silhouette-clipping</text>
+
+    <line x1="600" y1="604" x2="640" y2="604" stroke="#c9c6bf" stroke-width="1" stroke-dasharray="3 3"/>
+    <text x="648" y="600" font-family="Inter" font-weight="700" font-size="10" fill="#6a6a6a" letter-spacing="0.06em">GATES</text>
+    <text x="648" y="616" font-family="Inter" font-size="10.5" fill="#1a1a1a">on fail → retry once</text>
+    <text x="648" y="630" font-family="Inter" font-size="10" fill="#7a7a7a">with error in context</text>
+  </g>
+
+  <!-- Decision: pass or fallback -->
+  <path d="M 400 658 L 400 690" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#arr1)"/>
+  <text x="382" y="678" text-anchor="end" font-family="Inter" font-size="11" font-weight="700" fill="#1f7a3d">✓ pass</text>
+
+  <path d="M 600 658 Q 600 686, 620 686 L 700 686 Q 720 686, 720 698 L 720 710"
+        stroke="#1f7a3d" stroke-width="1.6" stroke-dasharray="5 4" fill="none" marker-end="url(#arr1-green)"/>
+  <text x="616" y="678" font-family="Inter" font-size="11" font-weight="700" fill="#1f7a3d">✗ fail × 2</text>
+
+  <!-- Stage 5: Rich-safe fallback -->
+  <g filter="url(#soft-shadow)">
+    <rect x="560" y="714" width="320" height="66" rx="12" fill="url(#fb-grad)" stroke="#8bc19b" stroke-width="1.2"/>
+    <circle cx="585" cy="745" r="16" fill="#1f7a3d"/>
+    <text x="585" y="750" text-anchor="middle" font-family="Inter" font-weight="800" font-size="13" fill="#ffffff">5</text>
+    <text x="610" y="736" font-family="Inter" font-weight="700" font-size="13" fill="#1a1a1a">Rich-safe fallback</text>
+    <rect x="608" y="744" width="52" height="16" rx="4" fill="#1f7a3d"/>
+    <text x="634" y="756" text-anchor="middle" font-family="Inter" font-weight="700" font-size="9" fill="#ffffff" letter-spacing="0.1em">PURE</text>
+    <text x="610" y="772" font-family="Inter" font-size="10.5" fill="#4a4a4a">deterministic HTML from bible copy</text>
+  </g>
+
+  <!-- both authored HTML and rich-safe merge to assembler -->
+  <path d="M 400 694 L 400 820" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#arr1)"/>
+  <rect x="340" y="694" width="120" height="24" rx="6" fill="#ffffff" stroke="#d0cec8"/>
+  <text x="400" y="710" text-anchor="middle" font-family="Inter" font-weight="700" font-size="10.5" fill="#1a1a1a">authored HTML</text>
+
+  <path d="M 720 780 Q 720 810, 680 810 L 460 810 Q 420 810, 420 820" stroke="#1f7a3d" stroke-width="1.6" stroke-dasharray="5 4" fill="none" marker-end="url(#arr1-green)"/>
+
+  <!-- ====== PHASE 3: Assembly & Render ====== -->
+
+  <!-- Stage 6: Assembler -->
+  <g filter="url(#soft-shadow)">
+    <rect x="200" y="830" width="580" height="78" rx="12" fill="url(#pure-grad)" stroke="#d0cec8" stroke-width="1.2"/>
+    <circle cx="230" cy="869" r="18" fill="#4a4a4a"/>
+    <text x="230" y="874" text-anchor="middle" font-family="Inter" font-weight="800" font-size="15" fill="#ffffff">6</text>
+    <text x="260" y="856" font-family="Inter" font-weight="700" font-size="16" fill="#1a1a1a">Assembler</text>
+    <rect x="258" y="865" width="56" height="18" rx="4" fill="#4a4a4a"/>
+    <text x="286" y="878" text-anchor="middle" font-family="Inter" font-weight="700" font-size="10" fill="#ffffff" letter-spacing="0.1em">PURE</text>
+    <text x="260" y="898" font-family="Inter" font-size="12" fill="#4a4a4a">writes compositions/ · index.html · bible + traces · audio assets</text>
+
+    <line x1="600" y1="856" x2="640" y2="856" stroke="#c9c6bf" stroke-width="1" stroke-dasharray="3 3"/>
+    <text x="648" y="852" font-family="Inter" font-weight="700" font-size="10" fill="#6a6a6a" letter-spacing="0.06em">PRODUCES</text>
+    <text x="648" y="868" font-family="JetBrains Mono, monospace" font-size="10.5" fill="#1a1a1a">output/&lt;slug&gt;/</text>
+    <text x="648" y="882" font-family="Inter" font-size="10" fill="#7a7a7a">full project tree</text>
+  </g>
+  <path d="M 500 908 L 500 930" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#arr1)"/>
+
+  <!-- Stage 7: Lint + Repair -->
+  <g filter="url(#soft-shadow)">
+    <rect x="200" y="934" width="580" height="68" rx="12" fill="url(#pure-grad)" stroke="#d0cec8" stroke-width="1.2"/>
+    <circle cx="230" cy="968" r="18" fill="#4a4a4a"/>
+    <text x="230" y="973" text-anchor="middle" font-family="Inter" font-weight="800" font-size="15" fill="#ffffff">7</text>
+    <text x="260" y="955" font-family="Inter" font-weight="700" font-size="16" fill="#1a1a1a">Lint + Repair</text>
+    <rect x="258" y="964" width="56" height="18" rx="4" fill="#4a4a4a"/>
+    <text x="286" y="977" text-anchor="middle" font-family="Inter" font-weight="700" font-size="10" fill="#ffffff" letter-spacing="0.1em">PURE</text>
+    <text x="260" y="995" font-family="Inter" font-size="12" fill="#4a4a4a">`npx hyperframes lint` · auto-repair LLM_REPAIRABLE findings</text>
+  </g>
+  <path d="M 500 1002 L 500 1024" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#arr1)"/>
+
+  <!-- Stage 8: Render -->
+  <g filter="url(#soft-shadow)">
+    <rect x="200" y="1028" width="580" height="80" rx="12" fill="#1a1a1a" stroke="#1a1a1a" stroke-width="1.2"/>
+    <circle cx="230" cy="1068" r="18" fill="#ffffff"/>
+    <text x="230" y="1073" text-anchor="middle" font-family="Inter" font-weight="800" font-size="15" fill="#1a1a1a">8</text>
+    <text x="260" y="1055" font-family="Inter" font-weight="700" font-size="16" fill="#ffffff">Render → MP4</text>
+    <rect x="258" y="1064" width="80" height="18" rx="4" fill="#ffffff"/>
+    <text x="298" y="1077" text-anchor="middle" font-family="Inter" font-weight="700" font-size="10" fill="#1a1a1a" letter-spacing="0.08em">BROWSER</text>
+    <text x="260" y="1097" font-family="Inter" font-size="12" fill="#e4e2dd">`npx hyperframes render` → headless Chromium → ffmpeg mux (see Fig 4)</text>
+
+    <line x1="600" y1="1055" x2="640" y2="1055" stroke="#8a8a8a" stroke-width="1" stroke-dasharray="3 3"/>
+    <text x="648" y="1051" font-family="Inter" font-weight="700" font-size="10" fill="#e4e2dd" letter-spacing="0.06em">PRODUCES</text>
+    <text x="648" y="1067" font-family="JetBrains Mono, monospace" font-size="10.5" fill="#ffffff">renders/*.mp4</text>
+    <text x="648" y="1081" font-family="Inter" font-size="10" fill="#c9c6bf">~3 min · 960 frames</text>
+  </g>
+
+  <!-- Sidebar timing summary -->
+  <g transform="translate(880, 170)">
+    <rect x="0" y="0" width="96" height="940" rx="8" fill="#fff" stroke="#d0cec8"/>
+    <text x="48" y="20" text-anchor="middle" font-family="Inter" font-weight="800" font-size="10" fill="#6a6a6a" letter-spacing="0.08em">TIMELINE</text>
+    <line x1="48" y1="30" x2="48" y2="920" stroke="#e4e2dd" stroke-width="1.5"/>
+    <g font-family="Inter" font-size="9.5" fill="#7a7a7a">
+      <circle cx="48" cy="47" r="4" fill="#d31145"/>
+      <text x="48" y="72" text-anchor="middle">0:00</text>
+      <circle cx="48" cy="105" r="3" fill="#d31145"/>
+      <text x="48" y="130" text-anchor="middle">0:15</text>
+      <circle cx="48" cy="210" r="3" fill="#d31145"/>
+      <text x="48" y="235" text-anchor="middle">6:00</text>
+      <circle cx="48" cy="410" r="3" fill="#4a4a4a"/>
+      <text x="48" y="435" text-anchor="middle">6:15</text>
+      <circle cx="48" cy="510" r="3" fill="#4a4a4a"/>
+      <text x="48" y="535" text-anchor="middle">6:20</text>
+      <circle cx="48" cy="720" r="3" fill="#1a1a1a"/>
+      <text x="48" y="745" text-anchor="middle">~9:00</text>
+      <circle cx="48" cy="900" r="4" fill="#1a1a1a"/>
+      <text x="48" y="925" text-anchor="middle" font-weight="700" fill="#1a1a1a">DONE</text>
+    </g>
+  </g>
+</svg>
+<div class="legend">
+  <span><span class="sw" style="background:linear-gradient(180deg,#fef3f5,#fce6ea);border:1px solid #e9b5ba"></span>LLM-driven stage</span>
+  <span><span class="sw" style="background:linear-gradient(180deg,#f7f5f0,#ece9e2);border:1px solid #d0cec8"></span>Deterministic stage</span>
+  <span><span class="sw" style="background:linear-gradient(180deg,#eaf5ec,#d9eedc);border:1px solid #8bc19b"></span>Fallback path</span>
+  <span><span class="sw" style="background:repeating-linear-gradient(90deg,#1f7a3d 0,#1f7a3d 4px,transparent 4px,transparent 8px);border:none;height:2px;margin-top:6px"></span>Conditional (retry fails)</span>
+</div>
+<div class="caption">Figure 1 · The eight-stage FrameCraft pipeline grouped into three phases. The timeline rail on the right shows cumulative elapsed time for a typical 30-second, 7-scene run.</div>
+</div>
+
+<div class="card accent">
+  <h4>Why a dedicated story pass?</h4>
+  <p>Early prototypes authored each scene in isolation — the LLM invented copy from thin <code>block_props</code>, couldn't reference neighbor scenes, and produced films that felt like "a list of facts animated". Introducing the bible as a first-class planning step produced the biggest quality jump in the project (v5 vs v4 below) because every downstream stage now has <em>global narrative context</em>.</p>
+</div>
+</section>
+
+<section id="stage-bible">
+<h2><span class="n">①</span>Story Bible</h2>
+
+<div class="stage-grid">
+  <div class="lbl">Module</div>
+  <div><code>src/framecraft/story_bible.py</code></div>
+  <div class="lbl">Model</div>
+  <div>Gemini 2.5 Pro (Vertex AI) · JSON-mode · no <code>response_schema</code></div>
+  <div class="lbl">Output</div>
+  <div><code>.framecraft/story-bible.json</code></div>
+  <div class="lbl">Latency</div>
+  <div>~15s · ~$0.02 per run · cached per situation</div>
+</div>
+
+<p>The bible is a full film treatment in structured JSON. One LLM call, then pydantic validation, then a one-shot retry if the output fails cross-reference checks (orphan pillars, duration mismatches, char-budget overruns).</p>
+
+<p>What the bible captures:</p>
+
+<ul>
+  <li><strong>Thesis</strong> — one sentence: the single takeaway for the viewer.</li>
+  <li><strong>Pillars (2–7)</strong> — key messages, each tagged with <code>tier</code> (<span class="chip">hero</span> <span class="chip">support</span> <span class="chip">context</span>), a <code>weight</code> 1–5, and an <code>anchor</code> flag for the scene that carries the film's signature moment.</li>
+  <li><strong>Scenes (2–8)</strong> — each with a narrative <code>role</code> (<code>hook</code>, <code>hero-beat</code>, <code>evidence</code>, <code>proof-point</code>, <code>resolution</code>, <code>brand-lockup</code>, <code>transition</code>), a <code>duration_s</code>, a <code>tone</code>, a full copy ledger (every text element with <code>max_chars</code> budget), and <code>entry_motif</code> + <code>exit_motif</code> handoffs.</li>
+  <li><strong>Exhibits</strong> — data objects used by scenes: <code>comparison_table</code>, <code>line_curve</code>, <code>bar_chart</code>, <code>stat_grid</code>, <code>checklist</code>, <code>timeline</code>.</li>
+  <li><strong>Motif arc</strong> — a recurring visual element (shield, logo) whose state progresses across scenes: "0% drawn" → "three edges visible" → "complete emblem".</li>
+</ul>
+
+<p>Cross-reference invariants enforced by pydantic:</p>
+
+<div class="card">
+<ul>
+  <li>Every pillar id referenced in <code>scene.carries</code> must exist.</li>
+  <li>Every exhibit id in <code>scene.exhibit_ids</code> must exist.</li>
+  <li>Every hero-tier pillar must appear in at least one scene.</li>
+  <li>Scene indices must be contiguous from 0.</li>
+  <li>Sum of <code>scene.duration_s</code> must be within ±0.5s of total duration.</li>
+  <li>At least one scene must have <code>is_anchor: true</code>.</li>
+  <li>Hero-tier scenes must carry at least one pillar.</li>
+  <li>Every <code>copy_item.text</code> length ≤ <code>max_chars × 1.15</code> (15% LLM grace).</li>
+</ul>
+</div>
+</section>
+
+<section id="stage-plan">
+<h2><span class="n">②</span>Scene graph</h2>
+
+<div class="stage-grid">
+  <div class="lbl">Module</div>
+  <div><code>src/framecraft/story_bible.py::bible_to_plan()</code></div>
+  <div class="lbl">Mode</div>
+  <div>Deterministic (no LLM call)</div>
+</div>
+
+<p>With the bible in hand, the scene graph is a <strong>mechanical transform</strong>. Each <code>SceneBrief</code> in the bible becomes one <code>Scene</code> in the plan:</p>
+
+<table>
+  <thead><tr><th>Bible scene role</th><th>Resolved block_id</th></tr></thead>
+  <tbody>
+    <tr><td><code>hook</code>, <code>hero-beat</code>, <code>resolution</code></td><td><code>title-card</code></td></tr>
+    <tr><td><code>evidence</code>, <code>proof-point</code></td><td><code>lower-third</code></td></tr>
+    <tr><td><code>brand-lockup</code></td><td><code>end-card</code></td></tr>
+    <tr><td><code>transition</code></td><td><code>gradient-bg</code></td></tr>
+  </tbody>
+</table>
+
+<p>The plan's <code>block_props</code> are populated with the first headline / subhead / tagline / stat_value from the scene's copy ledger — enough for the native Python template to render a sensible fallback if all else fails. The LLM author at step ③ receives the <em>full</em> bible scene brief, not just these props.</p>
+</section>
+
+<section id="stage-author">
+<h2><span class="n">③</span>Per-scene Author</h2>
+
+<div class="stage-grid">
+  <div class="lbl">Module</div>
+  <div><code>src/framecraft/rendering/llm_author.py</code></div>
+  <div class="lbl">Model</div>
+  <div>Gemini 2.5 Pro (Vertex AI)</div>
+  <div class="lbl">LLM calls</div>
+  <div>3 per scene (brief + HTML + elevation)</div>
+  <div class="lbl">Output</div>
+  <div>A single Hyperframes <code>&lt;template&gt;</code> HTML block per scene</div>
+</div>
+
+<p>The author runs three chained LLM passes with a fresh context each time. The prompt weighs in at ~30,000 characters — a significant investment that delivers proportional output quality.</p>
+
+<div class="diagram">
+<svg viewBox="0 0 1020 480" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Three-pass author with validator retry loop">
+  <defs>
+    <marker id="a2-k" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#1a1a1a"/>
+    </marker>
+    <marker id="a2-m" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#c27b38"/>
+    </marker>
+    <marker id="a2-g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#1f7a3d"/>
+    </marker>
+    <linearGradient id="a2-llm" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0%" stop-color="#fef3f5"/>
+      <stop offset="100%" stop-color="#fce6ea"/>
+    </linearGradient>
+    <linearGradient id="a2-pure" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0%" stop-color="#f7f5f0"/>
+      <stop offset="100%" stop-color="#ece9e2"/>
+    </linearGradient>
+    <filter id="a2-shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="1.5" stdDeviation="2.5" flood-color="#000" flood-opacity="0.08"/>
+    </filter>
+  </defs>
+
+  <!-- Title strip -->
+  <rect x="30" y="22" width="960" height="36" rx="8" fill="#fafaf7" stroke="#eeebe4"/>
+  <text x="48" y="46" font-family="Inter" font-weight="800" font-size="11" letter-spacing="0.18em" fill="#d31145">INNER LOOP · per scene · runs N times</text>
+  <text x="972" y="46" text-anchor="end" font-family="JetBrains Mono, monospace" font-size="11" fill="#6a6a6a">src/framecraft/rendering/llm_author.py</text>
+
+  <!-- Input -->
+  <g filter="url(#a2-shadow)">
+    <rect x="30" y="100" width="160" height="94" rx="10" fill="#ffffff" stroke="#d0cec8"/>
+    <text x="110" y="124" text-anchor="middle" font-family="Inter" font-weight="700" font-size="12" fill="#1a1a1a">SCENE CONTEXT</text>
+    <line x1="46" y1="132" x2="174" y2="132" stroke="#e4e2dd"/>
+    <g font-family="Inter" font-size="10.5" fill="#4a4a4a">
+      <text x="46" y="148">• bible thesis + pillars</text>
+      <text x="46" y="164">• scene.copy_items</text>
+      <text x="46" y="180">• exhibit refs · motif</text>
+      <text x="46" y="196" font-weight="700" fill="#1a1a1a">• prev/next motifs</text>
+    </g>
+  </g>
+  <path d="M 190 147 L 218 147" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#a2-k)"/>
+
+  <!-- Pass 1: Brief -->
+  <g filter="url(#a2-shadow)">
+    <rect x="220" y="100" width="200" height="94" rx="10" fill="url(#a2-llm)" stroke="#e9b5ba" stroke-width="1.2"/>
+    <circle cx="242" cy="124" r="13" fill="#d31145"/>
+    <text x="242" y="129" text-anchor="middle" font-family="Inter" font-weight="800" font-size="12" fill="#ffffff">1</text>
+    <text x="263" y="120" font-family="Inter" font-weight="700" font-size="13" fill="#1a1a1a">Design brief</text>
+    <rect x="261" y="128" width="44" height="14" rx="3" fill="#d31145"/>
+    <text x="283" y="138" text-anchor="middle" font-family="Inter" font-weight="700" font-size="9" fill="#ffffff" letter-spacing="0.1em">LLM</text>
+
+    <g font-family="Inter" font-size="10" fill="#4a4a4a">
+      <text x="236" y="158">LAYOUT · zones</text>
+      <text x="236" y="172">SIGNATURE_MOMENT</text>
+      <text x="236" y="186">20+ ELEMENTS + COPY</text>
+    </g>
+  </g>
+  <path d="M 420 147 L 448 147" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#a2-k)"/>
+
+  <!-- Pass 2: HTML -->
+  <g filter="url(#a2-shadow)">
+    <rect x="450" y="100" width="200" height="94" rx="10" fill="url(#a2-llm)" stroke="#e9b5ba" stroke-width="1.2"/>
+    <circle cx="472" cy="124" r="13" fill="#d31145"/>
+    <text x="472" y="129" text-anchor="middle" font-family="Inter" font-weight="800" font-size="12" fill="#ffffff">2</text>
+    <text x="493" y="120" font-family="Inter" font-weight="700" font-size="13" fill="#1a1a1a">HTML execution</text>
+    <rect x="491" y="128" width="44" height="14" rx="3" fill="#d31145"/>
+    <text x="513" y="138" text-anchor="middle" font-family="Inter" font-weight="700" font-size="9" fill="#ffffff" letter-spacing="0.1em">LLM</text>
+
+    <g font-family="Inter" font-size="10" fill="#4a4a4a">
+      <text x="466" y="158">scoped CSS + inline SVG</text>
+      <text x="466" y="172">GSAP nested timelines</text>
+      <text x="466" y="186">≥25 tweens · ≥6 techniques</text>
+    </g>
+  </g>
+  <path d="M 650 147 L 678 147" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#a2-k)"/>
+
+  <!-- Validator -->
+  <g filter="url(#a2-shadow)">
+    <rect x="680" y="100" width="200" height="94" rx="10" fill="url(#a2-pure)" stroke="#d0cec8" stroke-width="1.2"/>
+    <circle cx="702" cy="124" r="13" fill="#4a4a4a"/>
+    <text x="702" y="129" text-anchor="middle" font-family="Inter" font-weight="800" font-size="12" fill="#ffffff">✓</text>
+    <text x="723" y="120" font-family="Inter" font-weight="700" font-size="13" fill="#1a1a1a">Validator</text>
+    <rect x="721" y="128" width="44" height="14" rx="3" fill="#4a4a4a"/>
+    <text x="743" y="138" text-anchor="middle" font-family="Inter" font-weight="700" font-size="9" fill="#ffffff" letter-spacing="0.1em">PURE</text>
+
+    <g font-family="Inter" font-size="10" fill="#4a4a4a">
+      <text x="696" y="158">14 regex + structural rules</text>
+      <text x="696" y="172">runtime · aesthetic · layout</text>
+      <text x="696" y="186" font-weight="700" fill="#1a1a1a">all must pass</text>
+    </g>
+  </g>
+
+  <!-- Decision labels at validator -->
+  <text x="890" y="130" font-family="Inter" font-weight="700" font-size="11" fill="#1f7a3d">✓ pass</text>
+  <text x="890" y="170" font-family="Inter" font-weight="700" font-size="11" fill="#c27b38">✗ fail</text>
+
+  <!-- Retry loop: validator fail × 1 → Pass 2 -->
+  <path d="M 780 194 Q 780 240, 730 240 L 580 240 Q 550 240, 550 224 L 550 196"
+        fill="none" stroke="#c27b38" stroke-width="1.6" stroke-dasharray="5 4" marker-end="url(#a2-m)"/>
+  <g transform="translate(620, 230)">
+    <rect x="0" y="-12" width="120" height="24" rx="12" fill="#fcf6ec" stroke="#c27b38"/>
+    <text x="60" y="3" text-anchor="middle" font-family="Inter" font-weight="700" font-size="10" fill="#c27b38">RETRY #1</text>
+    <text x="60" y="15" text-anchor="middle" font-family="Inter" font-size="9.5" fill="#7a4c18">error fed to prompt</text>
+  </g>
+
+  <!-- Validator → Pass 3 (pass path) -->
+  <path d="M 780 194 L 780 272" stroke="#1f7a3d" stroke-width="1.8" marker-end="url(#a2-g)"/>
+
+  <!-- Pass 3: Elevation -->
+  <g filter="url(#a2-shadow)">
+    <rect x="680" y="276" width="200" height="90" rx="10" fill="url(#a2-llm)" stroke="#e9b5ba" stroke-width="1.2"/>
+    <circle cx="702" cy="300" r="13" fill="#d31145"/>
+    <text x="702" y="305" text-anchor="middle" font-family="Inter" font-weight="800" font-size="12" fill="#ffffff">3</text>
+    <text x="723" y="296" font-family="Inter" font-weight="700" font-size="13" fill="#1a1a1a">Elevation</text>
+    <rect x="721" y="304" width="44" height="14" rx="3" fill="#d31145"/>
+    <text x="743" y="314" text-anchor="middle" font-family="Inter" font-weight="700" font-size="9" fill="#ffffff" letter-spacing="0.1em">LLM</text>
+
+    <g font-family="Inter" font-size="10" fill="#4a4a4a">
+      <text x="696" y="334">+2 elements, +4 tweens</text>
+      <text x="696" y="348">+1 new technique (additive)</text>
+      <text x="696" y="362" font-style="italic" fill="#7a7a7a">best-effort · keeps pass-2 if fails</text>
+    </g>
+  </g>
+
+  <!-- Pass 3 → Authored HTML -->
+  <path d="M 780 366 L 780 394" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#a2-k)"/>
+  <g filter="url(#a2-shadow)">
+    <rect x="640" y="398" width="280" height="50" rx="10" fill="#1a1a1a"/>
+    <text x="780" y="420" text-anchor="middle" font-family="Inter" font-weight="700" font-size="13" fill="#ffffff">▶  Authored scene HTML</text>
+    <text x="780" y="437" text-anchor="middle" font-family="Inter" font-size="10.5" fill="#c9c6bf">→ assembler writes to compositions/</text>
+  </g>
+
+  <!-- Fallback path: retry also fails -->
+  <path d="M 850 194 Q 870 194, 870 230 L 870 380 Q 870 422, 580 422"
+        fill="none" stroke="#1f7a3d" stroke-width="1.6" stroke-dasharray="5 4" marker-end="url(#a2-g)"/>
+  <g transform="translate(890, 300)">
+    <rect x="-52" y="-14" width="104" height="26" rx="13" fill="#eaf5ec" stroke="#1f7a3d"/>
+    <text x="0" y="-1" text-anchor="middle" font-family="Inter" font-weight="700" font-size="10" fill="#1f7a3d">RETRY #2 FAILS</text>
+    <text x="0" y="12" text-anchor="middle" font-family="Inter" font-size="9.5" fill="#2c5a3e">→ rich-safe fallback</text>
+  </g>
+
+  <!-- Rich-safe fallback card -->
+  <g filter="url(#a2-shadow)">
+    <rect x="260" y="398" width="320" height="50" rx="10" fill="#eaf5ec" stroke="#1f7a3d"/>
+    <circle cx="284" cy="423" r="13" fill="#1f7a3d"/>
+    <text x="284" y="428" text-anchor="middle" font-family="Inter" font-weight="800" font-size="12" fill="#ffffff">5</text>
+    <text x="308" y="418" font-family="Inter" font-weight="700" font-size="12.5" fill="#1a1a1a">Rich-safe fallback</text>
+    <text x="308" y="434" font-family="Inter" font-size="10" fill="#4a4a4a">deterministic HTML from bible copy ledger</text>
+  </g>
+
+  <!-- Stats sidebar -->
+  <g transform="translate(30, 230)">
+    <rect x="0" y="0" width="200" height="218" rx="10" fill="#fafaf7" stroke="#e4e2dd"/>
+    <text x="18" y="24" font-family="Inter" font-weight="800" font-size="10" letter-spacing="0.14em" fill="#d31145">COST &amp; OUTPUT</text>
+    <g font-family="Inter" font-size="11" fill="#4a4a4a">
+      <text x="18" y="50">LLM calls per scene</text>
+      <text x="182" y="50" text-anchor="end" font-weight="700" fill="#1a1a1a">3</text>
+      <text x="18" y="70">Prompt size (each)</text>
+      <text x="182" y="70" text-anchor="end" font-weight="700" fill="#1a1a1a">~30KB</text>
+      <text x="18" y="90">Latency per scene</text>
+      <text x="182" y="90" text-anchor="end" font-weight="700" fill="#1a1a1a">60–90s</text>
+      <text x="18" y="110">Cost per scene</text>
+      <text x="182" y="110" text-anchor="end" font-weight="700" fill="#1a1a1a">~$0.012</text>
+    </g>
+    <line x1="18" y1="126" x2="182" y2="126" stroke="#e4e2dd"/>
+    <text x="18" y="146" font-family="Inter" font-weight="700" font-size="10.5" letter-spacing="0.08em" fill="#6a6a6a">EACH SCENE MUST HAVE</text>
+    <g font-family="Inter" font-size="10.5" fill="#4a4a4a">
+      <text x="18" y="164">≥ 20 animated elements</text>
+      <text x="18" y="180">≥ 25 GSAP tweens</text>
+      <text x="18" y="196">≥ 6 techniques (3 categories)</text>
+      <text x="18" y="212">≥ 2 nested sub-timelines</text>
+    </g>
+  </g>
+</svg>
+<div class="caption">Figure 2 · The per-scene author loop. Pass 2 is the only gated pass — failure triggers a single retry with the specific validator error fed into the next prompt. Pass 3 is best-effort (keeps the Pass-2 HTML if elevation fails). Two-time failure yields to the rich-safe fallback that builds the scene deterministically from the bible's copy ledger.</div>
+</div>
+
+<h3>Pass 1 · Design brief</h3>
+<p>The LLM writes a short text-format brief committing to:</p>
+<ul>
+  <li><code>NARRATIVE</code> — what story this scene tells inside the film.</li>
+  <li><code>LAYOUT</code> — zone assignments (<code>Z-TL</code>, <code>Z-BR</code>, <code>Z-C</code>, etc.) for primary content.</li>
+  <li><code>SIGNATURE_MOMENT</code> — the one hero beat this scene carries.</li>
+  <li><code>COMPONENTS_USED</code> — 2+ from the component vocabulary (stat grid, comparison table, checklist, timeline, number counter, etc.).</li>
+  <li><code>ELEMENTS</code> — 20+ named elements with role, zone, visual treatment.</li>
+  <li><code>COPY</code> — exact copy ledger, drawn verbatim from the bible.</li>
+  <li><code>MOTION_MOMENTS</code> — 6+ beats with timing and technique.</li>
+  <li><code>TIMELINE_STRUCTURE</code> — the nested sub-timelines to build.</li>
+  <li><code>COLOR_DEPTH</code> — exact HEX values (from the brand system when present).</li>
+  <li><code>DOMAIN_VOCABULARY</code> — 2–3 industry-specific motifs.</li>
+  <li><code>PACING</code> — the rhythm (staccato / legato / crescendo-to-beat).</li>
+</ul>
+
+<h3>Pass 2 · HTML execution</h3>
+<p>Given the brief, the LLM writes the complete <code>&lt;template&gt;</code> block — scoped CSS, inline SVG, GSAP timeline with nested sub-timelines, all under strict density floors:</p>
+<ul>
+  <li>≥ 20 animated DOM elements</li>
+  <li>≥ 25 GSAP tween calls</li>
+  <li>≥ 6 distinct motion techniques across ≥ 3 categories</li>
+  <li>≥ 3 atmospheric layers (grain, orbs, vignette, scanlines, …)</li>
+  <li>≥ 2 nested sub-timelines via <code>gsap.timeline()</code> + <code>tl.add(subTl, t)</code></li>
+  <li>Exactly 1 signature moment</li>
+  <li>3-phase timeline (entry → evolution → exit)</li>
+  <li>Every primary element gets at least one tween; every atmospheric element a continuous or breathing one</li>
+</ul>
+
+<h3>Pass 3 · Elevation polish</h3>
+<p>The LLM reviews its own Pass-2 output and adds <em>without removing</em>:</p>
+<ul>
+  <li>≥ 2 new DOM elements</li>
+  <li>≥ 4 new tweens</li>
+  <li>≥ 1 new technique not yet used</li>
+  <li>A secondary ambient motion or signature detail that was missing</li>
+</ul>
+<p>If the elevated output fails validation, we keep the Pass-2 result (elevation is best-effort).</p>
+</section>
+
+<section id="stage-validator">
+<h2><span class="n">④</span>Validator gate</h2>
+
+<div class="stage-grid">
+  <div class="lbl">Module</div>
+  <div><code>src/framecraft/rendering/llm_author.py::_validate()</code></div>
+  <div class="lbl">Nature</div>
+  <div>Regex + structural checks · purely deterministic · no LLM</div>
+</div>
+
+<p>The validator is the single most important quality lever in the system. It represents every failure mode we've seen an LLM produce, encoded as a hard rejection. On failure, the author retries once with the specific error fed back in the prompt. On second failure, we fall back.</p>
+
+<p>See <a href="#rules">§Validator rules catalogue</a> below for the full list of 14 rules.</p>
+</section>
+
+<section id="stage-fallback">
+<h2><span class="n">⑤</span>Rich-safe fallback</h2>
+
+<div class="stage-grid">
+  <div class="lbl">Module</div>
+  <div><code>src/framecraft/rendering/rich_fallback.py</code></div>
+  <div class="lbl">Nature</div>
+  <div>Deterministic Python · produces ~14 animated elements + 14 tweens · always passes validator</div>
+</div>
+
+<p>When a scene can't get past the validator in two attempts, instead of shipping a broken scene or collapsing to a single-opacity fade, we render a <strong>bible-aware rich template</strong> using the scene's copy ledger (eyebrow, headline, subhead, bullets, tagline, CTA) and the brand's palette.</p>
+
+<p>The fallback composition:</p>
+<ul>
+  <li>Cream/dark bg with two blurred brand-colored orbs</li>
+  <li>SVG feTurbulence grain layer</li>
+  <li>Radial vignette breathing</li>
+  <li>Conditional eyebrow-tick next to eyebrow label (only when eyebrow copy exists)</li>
+  <li>Staggered char/word entries with <code>power3.out</code></li>
+  <li>Ambient camera push over full scene with <code>sine.inOut</code></li>
+  <li>Content fade + y-shift on exit (no full-bleed wipe panel)</li>
+</ul>
+
+<p>This was the biggest UX-coherence fix in the project: in early versions, scenes that failed LLM authoring collapsed to a boring 2-element opacity fade, and <em>one broken scene ruined the film</em>. The rich-safe fallback keeps scene density proportional even under LLM failure.</p>
+</section>
+
+<section id="stage-assembler">
+<h2><span class="n">⑥</span>Assembler</h2>
+
+<div class="stage-grid">
+  <div class="lbl">Module</div>
+  <div><code>src/framecraft/assembler.py</code></div>
+</div>
+
+<p>Writes the final files to disk:</p>
+<ul>
+  <li><code>compositions/scene-NN-&lt;block_id&gt;.html</code> — one per scene</li>
+  <li><code>index.html</code> — root composition wiring everything together</li>
+  <li><code>plan.json</code> — the plan with <code>polished.html</code> cache written back so <code>from-plan</code> can skip LLM calls on re-renders</li>
+  <li><code>hyperframes.json</code>, <code>meta.json</code> — Hyperframes project metadata</li>
+  <li><code>.framecraft/story-bible.json</code> — the bible for the run</li>
+  <li><code>.framecraft/assembler-traces/scene-NN.json</code> — per-scene token / elapsed / cache metrics</li>
+  <li><code>assets/</code> — audio bed copied if <code>--music</code> was provided</li>
+</ul>
+
+<p>For each scene, the assembler routes through a decision tree:</p>
+<div class="pipe"><pre>
+polished["html"] already cached?
+   └─ yes → reuse (1 hit)
+   └─ no  → full_polish enabled + real provider?
+              └─ yes → call LLM author (possibly falls back)
+              └─ no  → Python native template (legacy)
+</pre></div>
+</section>
+
+<section id="stage-lint">
+<h2><span class="n">⑦</span>Lint + repair</h2>
+
+<div class="stage-grid">
+  <div class="lbl">Module</div>
+  <div><code>src/framecraft/lint.py</code>, <code>lint_policy.py</code></div>
+</div>
+
+<p>Runs <code>npx hyperframes lint</code> against the assembled project. Findings are classified:</p>
+<ul>
+  <li><span class="metric ok">FATAL</span> — compiler-rejection findings (never expected to pass in practice).</li>
+  <li><span class="metric warn">LLM_REPAIRABLE</span> — e.g. overlapping clips in a single scene — we re-author that scene with the error in context.</li>
+  <li><span class="metric">INFORMATIONAL</span> — e.g. caption-exit kill-tween suggestions; logged but not blocking.</li>
+</ul>
+
+<p>Findings trigger a <strong>repair loop</strong>: at most one re-authoring pass per scene. If lint still fails after repair, the run aborts with a clean exit code and a human-actionable message.</p>
+</section>
+
+<section id="stage-render">
+<h2><span class="n">⑧</span>Render</h2>
+
+<div class="stage-grid">
+  <div class="lbl">Module</div>
+  <div><code>src/framecraft/cli_render.py</code> → <code>npx hyperframes render</code></div>
+  <div class="lbl">Engine</div>
+  <div>Hyperframes uses headless Chromium to capture exact-time frames, then <code>ffmpeg</code> encodes MP4</div>
+  <div class="lbl">Latency</div>
+  <div>~3 min for a 30s @ 30fps 1080p render (6 parallel workers)</div>
+</div>
+
+<p>Render is deterministic: Hyperframes advances virtual time, captures each frame, muxes with <code>ffmpeg</code>. No wall-clock timers, no <code>requestAnimationFrame</code> (that's why the validator forbids them in scene JS).</p>
+
+<div class="diagram">
+<svg viewBox="0 0 1020 720" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Rendering pipeline — Hyperframes frame capture + ffmpeg mux">
+  <defs>
+    <marker id="rx-arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#1a1a1a"/>
+    </marker>
+    <linearGradient id="worker-grad" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0%" stop-color="#1a1a1a"/>
+      <stop offset="100%" stop-color="#333"/>
+    </linearGradient>
+    <linearGradient id="film-grad" x1="0" x2="1" y1="0" y2="0">
+      <stop offset="0%" stop-color="#f7f5f0"/>
+      <stop offset="50%" stop-color="#e8e5dd"/>
+      <stop offset="100%" stop-color="#f7f5f0"/>
+    </linearGradient>
+    <filter id="rx-shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="1.5" stdDeviation="2.5" flood-color="#000" flood-opacity="0.08"/>
+    </filter>
+  </defs>
+
+  <!-- ============ 1. Input: scene files ============ -->
+  <g filter="url(#rx-shadow)">
+    <!-- Stack of files -->
+    <rect x="30" y="80" width="120" height="150" rx="6" fill="#efece6" stroke="#c9c6bf"/>
+    <rect x="38" y="72" width="120" height="150" rx="6" fill="#f5f2ec" stroke="#c9c6bf"/>
+    <rect x="46" y="64" width="120" height="150" rx="6" fill="#ffffff" stroke="#c9c6bf"/>
+    <text x="106" y="90" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10.5" fill="#1a1a1a" font-weight="700">compositions/</text>
+    <g font-family="JetBrains Mono, monospace" font-size="9.5" fill="#4a4a4a">
+      <text x="56" y="108">scene-00-*.html</text>
+      <text x="56" y="122">scene-01-*.html</text>
+      <text x="56" y="136">scene-02-*.html</text>
+      <text x="56" y="150">scene-03-*.html</text>
+      <text x="56" y="164">scene-04-*.html</text>
+      <text x="56" y="178">scene-05-*.html</text>
+      <text x="56" y="192">scene-06-*.html</text>
+    </g>
+    <text x="106" y="210" text-anchor="middle" font-family="Inter" font-size="10" fill="#7a7a7a">+ index.html</text>
+  </g>
+  <text x="106" y="255" text-anchor="middle" font-family="Inter" font-weight="800" font-size="11" fill="#d31145" letter-spacing="0.1em">INPUT</text>
+  <text x="106" y="269" text-anchor="middle" font-family="Inter" font-size="10.5" fill="#6a6a6a">Hyperframes project</text>
+
+  <path d="M 172 140 L 212 140" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#rx-arr)"/>
+
+  <!-- ============ 2. Compiler ============ -->
+  <g filter="url(#rx-shadow)">
+    <rect x="216" y="94" width="200" height="100" rx="10" fill="#ffffff" stroke="#d0cec8" stroke-width="1.2"/>
+    <circle cx="244" cy="122" r="14" fill="#4a4a4a"/>
+    <text x="244" y="127" text-anchor="middle" font-family="Inter" font-weight="800" font-size="12" fill="#ffffff">A</text>
+    <text x="266" y="116" font-family="Inter" font-weight="700" font-size="13" fill="#1a1a1a">Compile</text>
+    <text x="266" y="130" font-family="Inter" font-size="10" fill="#6a6a6a">metadata + asset inlining</text>
+    <g font-family="Inter" font-size="10" fill="#4a4a4a">
+      <text x="228" y="154">• extract canvas + duration</text>
+      <text x="228" y="168">• inline GSAP from CDN</text>
+      <text x="228" y="182">• @font-face deterministic map</text>
+    </g>
+  </g>
+
+  <path d="M 420 140 L 460 140" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#rx-arr)"/>
+
+  <!-- ============ 3. Chromium workers (parallel capture) ============ -->
+  <g filter="url(#rx-shadow)">
+    <rect x="464" y="56" width="360" height="180" rx="12" fill="#f7f5f0" stroke="#d0cec8" stroke-width="1.2"/>
+    <text x="484" y="80" font-family="Inter" font-weight="800" font-size="11" fill="#d31145" letter-spacing="0.12em">B · FRAME CAPTURE</text>
+    <text x="484" y="96" font-family="Inter" font-weight="700" font-size="13" fill="#1a1a1a">6 × Headless Chromium workers (parallel)</text>
+    <text x="484" y="111" font-family="Inter" font-size="10.5" fill="#6a6a6a">virtual-time engine advances the GSAP timeline, screenshots the DOM</text>
+
+    <!-- 6 worker chips in a grid -->
+    <g font-family="JetBrains Mono, monospace" font-size="9" fill="#ffffff">
+      <!-- Row 1 -->
+      <rect x="484" y="126" width="100" height="44" rx="6" fill="url(#worker-grad)"/>
+      <text x="534" y="142" text-anchor="middle" font-weight="700">worker-1</text>
+      <text x="534" y="158" text-anchor="middle" fill="#c9c6bf">frames 000–160</text>
+
+      <rect x="594" y="126" width="100" height="44" rx="6" fill="url(#worker-grad)"/>
+      <text x="644" y="142" text-anchor="middle" font-weight="700">worker-2</text>
+      <text x="644" y="158" text-anchor="middle" fill="#c9c6bf">frames 160–320</text>
+
+      <rect x="704" y="126" width="100" height="44" rx="6" fill="url(#worker-grad)"/>
+      <text x="754" y="142" text-anchor="middle" font-weight="700">worker-3</text>
+      <text x="754" y="158" text-anchor="middle" fill="#c9c6bf">frames 320–480</text>
+
+      <!-- Row 2 -->
+      <rect x="484" y="176" width="100" height="44" rx="6" fill="url(#worker-grad)"/>
+      <text x="534" y="192" text-anchor="middle" font-weight="700">worker-4</text>
+      <text x="534" y="208" text-anchor="middle" fill="#c9c6bf">frames 480–640</text>
+
+      <rect x="594" y="176" width="100" height="44" rx="6" fill="url(#worker-grad)"/>
+      <text x="644" y="192" text-anchor="middle" font-weight="700">worker-5</text>
+      <text x="644" y="208" text-anchor="middle" fill="#c9c6bf">frames 640–800</text>
+
+      <rect x="704" y="176" width="100" height="44" rx="6" fill="url(#worker-grad)"/>
+      <text x="754" y="192" text-anchor="middle" font-weight="700">worker-6</text>
+      <text x="754" y="208" text-anchor="middle" fill="#c9c6bf">frames 800–960</text>
+    </g>
+  </g>
+
+  <!-- ============ 4. Virtual time / per-frame detail callout ============ -->
+  <g filter="url(#rx-shadow)">
+    <rect x="464" y="270" width="360" height="140" rx="12" fill="#ffffff" stroke="#d0cec8" stroke-width="1.2"/>
+    <text x="484" y="292" font-family="Inter" font-weight="800" font-size="11" fill="#d31145" letter-spacing="0.12em">PER-FRAME (inside each worker)</text>
+
+    <!-- Schematic: timeline with virtual clock advance -->
+    <g transform="translate(484, 305)">
+      <!-- Timeline track -->
+      <rect x="0" y="20" width="320" height="10" rx="5" fill="#efece6"/>
+      <rect x="0" y="20" width="106" height="10" rx="5" fill="#d31145"/>
+      <text x="0" y="14" font-family="JetBrains Mono, monospace" font-size="9" fill="#1a1a1a">t = 0s</text>
+      <text x="320" y="14" text-anchor="end" font-family="JetBrains Mono, monospace" font-size="9" fill="#1a1a1a">t = 32s</text>
+
+      <!-- Virtual clock markers -->
+      <circle cx="35" cy="25" r="4" fill="#1a1a1a"/>
+      <text x="35" y="52" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#4a4a4a">t=3.5</text>
+      <circle cx="106" cy="25" r="4" fill="#d31145"/>
+      <text x="106" y="52" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#d31145" font-weight="700">t=10.6</text>
+      <circle cx="185" cy="25" r="3" fill="#7a7a7a"/>
+      <text x="185" y="52" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#7a7a7a">t=18.5</text>
+      <circle cx="260" cy="25" r="3" fill="#7a7a7a"/>
+      <text x="260" y="52" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="9" fill="#7a7a7a">t=26.0</text>
+
+      <!-- Steps -->
+      <g font-family="Inter" font-size="10" fill="#4a4a4a">
+        <text x="0" y="78">1. set virtual clock → t</text>
+        <text x="0" y="94">2. tick GSAP: tl.progress(t / duration)</text>
+        <text x="0" y="110">3. await layout/paint stable</text>
+        <text x="110" y="78">4. page.screenshot() → frame_NNNN.jpg</text>
+        <text x="110" y="94">5. advance t += 1/30</text>
+        <text x="110" y="110">6. repeat until t ≥ duration</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- ============ 5. Frames artifact ============ -->
+  <path d="M 644 410 L 644 440" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#rx-arr)"/>
+
+  <g filter="url(#rx-shadow)">
+    <rect x="380" y="446" width="520" height="84" rx="12" fill="url(#film-grad)" stroke="#d0cec8" stroke-width="1.2"/>
+    <text x="400" y="470" font-family="Inter" font-weight="800" font-size="11" fill="#d31145" letter-spacing="0.12em">C · FRAME ARTIFACTS</text>
+    <text x="400" y="487" font-family="Inter" weight="700" font-size="13" fill="#1a1a1a" font-weight="700">960 JPEG frames (30fps × 32s)</text>
+
+    <!-- Mini film strip -->
+    <g transform="translate(400, 498)">
+      <rect x="0" y="0" width="480" height="20" fill="#1a1a1a"/>
+      <g fill="#ffffff">
+        <!-- sprocket holes -->
+        <rect x="5" y="2" width="6" height="4" rx="1"/>
+        <rect x="5" y="14" width="6" height="4" rx="1"/>
+        <rect x="35" y="2" width="6" height="4" rx="1"/>
+        <rect x="35" y="14" width="6" height="4" rx="1"/>
+        <rect x="65" y="2" width="6" height="4" rx="1"/>
+        <rect x="65" y="14" width="6" height="4" rx="1"/>
+        <rect x="95" y="2" width="6" height="4" rx="1"/>
+        <rect x="95" y="14" width="6" height="4" rx="1"/>
+        <rect x="125" y="2" width="6" height="4" rx="1"/>
+        <rect x="125" y="14" width="6" height="4" rx="1"/>
+        <rect x="155" y="2" width="6" height="4" rx="1"/>
+        <rect x="155" y="14" width="6" height="4" rx="1"/>
+        <rect x="185" y="2" width="6" height="4" rx="1"/>
+        <rect x="185" y="14" width="6" height="4" rx="1"/>
+        <rect x="215" y="2" width="6" height="4" rx="1"/>
+        <rect x="215" y="14" width="6" height="4" rx="1"/>
+        <rect x="245" y="2" width="6" height="4" rx="1"/>
+        <rect x="245" y="14" width="6" height="4" rx="1"/>
+        <rect x="275" y="2" width="6" height="4" rx="1"/>
+        <rect x="275" y="14" width="6" height="4" rx="1"/>
+        <rect x="305" y="2" width="6" height="4" rx="1"/>
+        <rect x="305" y="14" width="6" height="4" rx="1"/>
+        <rect x="335" y="2" width="6" height="4" rx="1"/>
+        <rect x="335" y="14" width="6" height="4" rx="1"/>
+        <rect x="365" y="2" width="6" height="4" rx="1"/>
+        <rect x="365" y="14" width="6" height="4" rx="1"/>
+        <rect x="395" y="2" width="6" height="4" rx="1"/>
+        <rect x="395" y="14" width="6" height="4" rx="1"/>
+        <rect x="425" y="2" width="6" height="4" rx="1"/>
+        <rect x="425" y="14" width="6" height="4" rx="1"/>
+        <rect x="455" y="2" width="6" height="4" rx="1"/>
+        <rect x="455" y="14" width="6" height="4" rx="1"/>
+      </g>
+    </g>
+    <text x="400" y="523" font-family="JetBrains Mono, monospace" font-size="10.5" fill="#4a4a4a">work-&lt;uuid&gt;/worker-N/frame_NNNNNN.jpg</text>
+  </g>
+
+  <path d="M 644 530 L 644 554" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#rx-arr)"/>
+
+  <!-- ============ 6. ffmpeg mux ============ -->
+  <g filter="url(#rx-shadow)">
+    <rect x="380" y="558" width="520" height="72" rx="12" fill="#ffffff" stroke="#d0cec8" stroke-width="1.2"/>
+    <circle cx="410" cy="594" r="16" fill="#1a1a1a"/>
+    <text x="410" y="600" text-anchor="middle" font-family="JetBrains Mono, monospace" font-weight="800" font-size="11" fill="#ffffff">ff</text>
+    <text x="436" y="581" font-family="Inter" font-weight="700" font-size="13" fill="#1a1a1a">D · ffmpeg encode + mux</text>
+    <text x="436" y="598" font-family="JetBrains Mono, monospace" font-size="10.5" fill="#4a4a4a">ffmpeg -r 30 -i frame_%06d.jpg -c:v libx264 …</text>
+    <text x="436" y="615" font-family="Inter" font-size="10.5" fill="#6a6a6a">H.264 encoding · AAC audio if music bed present · faststart flag</text>
+  </g>
+
+  <path d="M 644 630 L 644 656" stroke="#1a1a1a" stroke-width="1.6" marker-end="url(#rx-arr)"/>
+
+  <!-- ============ 7. Output MP4 ============ -->
+  <g filter="url(#rx-shadow)">
+    <rect x="390" y="660" width="500" height="50" rx="10" fill="#1a1a1a" stroke="#1a1a1a"/>
+    <text x="410" y="685" font-family="Inter" font-weight="800" font-size="11" fill="#ffffff" letter-spacing="0.12em">▶  OUTPUT</text>
+    <text x="490" y="680" font-family="JetBrains Mono, monospace" font-size="12" fill="#ffffff">renders/&lt;slug&gt;_&lt;timestamp&gt;.mp4</text>
+    <text x="490" y="697" font-family="Inter" font-size="10.5" fill="#c9c6bf">~15 MB · 1920×1080 · 30fps · H.264</text>
+  </g>
+
+  <!-- Right sidebar: constraints -->
+  <g transform="translate(30, 340)">
+    <rect x="0" y="0" width="330" height="340" rx="10" fill="#fafaf7" stroke="#e4e2dd"/>
+    <text x="20" y="28" font-family="Inter" font-weight="800" font-size="11" letter-spacing="0.14em" fill="#d31145">DETERMINISM CONTRACT</text>
+    <text x="20" y="50" font-family="Inter" font-size="12" fill="#4a4a4a">The capture engine seeks to an exact time</text>
+    <text x="20" y="64" font-family="Inter" font-size="12" fill="#4a4a4a">before each frame. For reproducible output,</text>
+    <text x="20" y="78" font-family="Inter" font-size="12" fill="#4a4a4a">scene JS must be fully seekable.</text>
+
+    <text x="20" y="108" font-family="Inter" font-weight="700" font-size="11.5" fill="#1a1a1a">The validator rejects in scene JS:</text>
+    <g font-family="JetBrains Mono, monospace" font-size="11" fill="#4a4a4a">
+      <text x="28" y="128">✕ Date.now()</text>
+      <text x="28" y="146">✕ Math.random()</text>
+      <text x="28" y="164">✕ requestAnimationFrame()</text>
+      <text x="28" y="182">✕ setTimeout / setInterval</text>
+      <text x="28" y="200">✕ performance.now()</text>
+      <text x="28" y="218">✕ fetch()</text>
+      <text x="28" y="236">✕ gsap repeat: -1</text>
+      <text x="28" y="254">✕ emoji font families</text>
+    </g>
+
+    <text x="20" y="284" font-family="Inter" font-weight="700" font-size="11.5" fill="#1a1a1a">Everything must be pure-state:</text>
+    <text x="20" y="302" font-family="Inter" font-size="11" fill="#4a4a4a">time-input → rendered DOM output.</text>
+    <text x="20" y="320" font-family="Inter" font-size="11" fill="#4a4a4a">Any hidden state = non-reproducible frames.</text>
+  </g>
+</svg>
+<div class="caption">Figure 4 · The rendering pipeline. Hyperframes compiles the project, splits the 960-frame capture range across 6 parallel headless-Chromium workers, seeks each worker to exact virtual times, screenshots the DOM at each tick, then hands the frame sequence to ffmpeg for H.264 mux. The validator's determinism contract (right) is what makes step B's exact-time seeking reliable.</div>
+</div>
+</section>
+
+<section id="rules">
+<h2><span class="n">§4</span>Validator rules catalogue</h2>
+
+<p>Every rule corresponds to a failure mode observed in real LLM output during development. Each rule name is the reason string the author sees on rejection.</p>
+
+<table class="rules-table">
+<thead><tr><th>Rule</th><th>Category</th><th>What it catches</th></tr></thead>
+<tbody>
+
+<tr><td><code>Date.now</code></td><td>Runtime</td><td>Non-deterministic time source; render capture can't reproduce frames.</td></tr>
+
+<tr><td><code>Math.random</code></td><td>Runtime</td><td>Non-deterministic; different frames pick different values.</td></tr>
+
+<tr><td><code>fetch</code></td><td>Runtime</td><td>Network during render is forbidden; hangs the capture engine.</td></tr>
+
+<tr><td><code>setTimeout / setInterval</code></td><td>Runtime</td><td>Wall-clock timers don't respect virtual-time advancement.</td></tr>
+
+<tr><td><code>requestAnimationFrame</code></td><td>Runtime</td><td>Tied to real-time display refresh; breaks deterministic seek.</td></tr>
+
+<tr><td><code>performance.now</code></td><td>Runtime</td><td>Another wall-clock source.</td></tr>
+
+<tr><td><code>emoji_font_apple / emoji_font_segoe</code></td><td>Runtime</td><td>Emoji fallback font-family stacks; Hyperframes compiler can't map them deterministically.</td></tr>
+
+<tr><td><code>gsap_infinite_repeat</code></td><td>Runtime</td><td><code>repeat: -1</code> loops — break exact-time frame seek; forces finite <code>repeat: Math.floor(duration / cycle) - 1</code>.</td></tr>
+
+<tr><td><code>template_literal_selector</code></td><td>Runtime</td><td>Patterns like <code>gsap.to(`${scope} .x`, …)</code> — the HTML bundler's CSS parser crashes on these; forces hardcoded strings.</td></tr>
+
+<tr><td><code>clip_class_styled</code></td><td>Aesthetic</td><td>CSS rules targeting <code>.clip</code> directly (Hyperframes' visibility-control class). A scoped <code>[data-composition-id="…"] .clip { position: absolute; }</code> stamps layout onto every timed element — scenes render blank with everything at (0,0).</td></tr>
+
+<tr><td><code>overlapping_clips_same_track</code></td><td>Structural</td><td>Two <code>.clip</code> elements with the same <code>data-track-index</code> and intersecting time ranges — Hyperframes can't render the overlap correctly. Rule forces unique tracks per element.</td></tr>
+
+<tr><td><code>long_text_in_svg</code></td><td>Aesthetic</td><td>SVG <code>&lt;text&gt;</code> node carrying &gt;12 chars — gets clipped by the parent SVG's viewBox. Famous bug: "GUARANTEED LIFETIME COVE…"</td></tr>
+
+<tr><td><code>long_text_over_shape</code></td><td>Aesthetic</td><td>HTML <code>&lt;div class="ribbon-text|shield-label|chip-text|hexagon-text|…"&gt;</code> carrying &gt;10 chars. The text extends past the shape's silhouette and becomes invisible against the canvas bg.</td></tr>
+
+<tr><td><code>full_bleed_exit_panel</code></td><td>Aesthetic</td><td>Elements named <code>exit-panel</code>, <code>cover-panel</code>, <code>wipe-panel</code>, <code>scene-cover</code>, <code>full-wipe</code> — a solid panel wiping in on exit creates a visible flash between scenes.</td></tr>
+
+<tr><td>Structural requireds</td><td>Runtime</td><td>Every scene must contain: GSAP CDN script, <code>&lt;template id="…"&gt;</code> wrapper, <code>data-composition-id</code> matching the comp id, <code>window.__timelines[...] = tl</code> registration, paused timeline.</td></tr>
+
+</tbody>
+</table>
+</section>
+
+<section id="bible-schema">
+<h2><span class="n">§5</span>Story Bible schema</h2>
+
+<p>Defined in <code>src/framecraft/schema.py</code>. All models are pydantic v2; the bible ships as a top-level <code>StoryBible</code> with nested <code>Pillar</code>, <code>SceneBrief</code>, <code>CopyEntry</code>, <code>Exhibit</code>, <code>MotifArc</code> children.</p>
+
+<pre><code>StoryBible {
+  version:       1
+  situation:     str                      # the original user input
+  thesis:        str (10–280)             # single sentence
+  audience:      str
+  overall_tone:  str
+  brand_keyword: str | null               # "aia", etc. — triggers brand injection
+  duration:      float > 0
+  pillars:       list[Pillar]   (2–7)
+  exhibits:      list[Exhibit]  (≤12)
+  motif:         MotifArc | null
+  scenes:        list[SceneBrief] (2–8)
+}
+
+Pillar {
+  id:     str   ([A-Za-z0-9_\-]+)
+  claim:  str   (3–140)
+  tier:   "hero" | "support" | "context"
+  weight: int   (1–5)
+  anchor: bool                           # "if you watched only 5s, this is the moment"
+}
+
+SceneBrief {
+  index:         int
+  role:          hook | hero-beat | evidence | proof-point |
+                 resolution | brand-lockup | transition
+  duration_s:    float
+  tier:          hero | support | context
+  is_anchor:     bool
+  carries:       list[str]               # pillar ids
+  tone:          warm-restrained | confident-punch | data-precise |
+                 tender-close | energetic-pivot
+  entry_motif:   str                     # "cream fade", "light sweep from right"
+  exit_motif:    str                     # handoff string for next scene
+  copy_items:    list[CopyEntry]
+  exhibit_ids:   list[str]
+  narrative:     str
+}
+
+CopyEntry {
+  id:        str
+  text:      str
+  max_chars: int | null                  # enforced with 15% grace
+  kind:      eyebrow | headline | subhead | body | bullet |
+             stat_value | stat_label | caption | cta | tagline
+}
+
+Exhibit {
+  id:    str
+  kind:  comparison_table | line_curve | bar_chart |
+         stat_grid | checklist | timeline
+  # kind-specific fields follow — e.g.:
+  # comparison_table → columns, rows, highlight_column?
+  # line_curve       → x_label, y_label, series, style, area_fill
+  # bar_chart        → bars, unit, orientation
+  # stat_grid        → cells: [{value, label, chip?}, …]
+  # checklist        → items
+  # timeline         → milestones: [[time_label, event], …]
+}
+
+MotifArc {
+  id:                 str
+  description:        str
+  scene_progression:  dict[str, str]     # "0" → "0% drawn", "2" → "half formed"
+}
+</code></pre>
+
+<div class="diagram">
+<svg viewBox="0 0 1020 600" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Story Bible structure and cross-references">
+  <defs>
+    <marker id="bib-x" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#d31145"/>
+    </marker>
+    <linearGradient id="bib-root" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0%" stop-color="#d9174c"/>
+      <stop offset="100%" stop-color="#a80e37"/>
+    </linearGradient>
+    <linearGradient id="bib-hero" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0%" stop-color="#fdeff1"/>
+      <stop offset="100%" stop-color="#f5dde0"/>
+    </linearGradient>
+    <linearGradient id="bib-sup" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0%" stop-color="#f7f5f0"/>
+      <stop offset="100%" stop-color="#ede9e0"/>
+    </linearGradient>
+    <filter id="bib-shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="1.5" stdDeviation="2.5" flood-color="#000" flood-opacity="0.08"/>
+    </filter>
+  </defs>
+
+  <!-- Title strip -->
+  <rect x="30" y="22" width="960" height="36" rx="8" fill="#fafaf7" stroke="#eeebe4"/>
+  <text x="48" y="46" font-family="Inter" font-weight="800" font-size="11" letter-spacing="0.18em" fill="#d31145">AIA GOLD MAX · SAMPLE STORY BIBLE</text>
+  <text x="972" y="46" text-anchor="end" font-family="JetBrains Mono, monospace" font-size="11" fill="#6a6a6a">.framecraft/story-bible.json</text>
+
+  <!-- Root node -->
+  <g filter="url(#bib-shadow)">
+    <rect x="400" y="80" width="220" height="72" rx="12" fill="url(#bib-root)"/>
+    <text x="510" y="108" text-anchor="middle" font-family="Inter" font-weight="800" font-size="18" fill="#ffffff">StoryBible</text>
+    <text x="510" y="127" text-anchor="middle" font-family="Inter" font-size="10.5" fill="#ffeef1">thesis · audience · duration</text>
+    <text x="510" y="143" text-anchor="middle" font-family="Inter" font-size="10.5" fill="#ffd1da">brand_keyword: "aia"</text>
+  </g>
+
+  <!-- Branch trunk -->
+  <line x1="510" y1="152" x2="510" y2="180" stroke="#c9c6bf" stroke-width="1.5"/>
+  <line x1="130" y1="180" x2="890" y2="180" stroke="#c9c6bf" stroke-width="1.5"/>
+  <g stroke="#c9c6bf" stroke-width="1.5">
+    <line x1="130" y1="180" x2="130" y2="200"/>
+    <line x1="320" y1="180" x2="320" y2="200"/>
+    <line x1="510" y1="180" x2="510" y2="200"/>
+    <line x1="700" y1="180" x2="700" y2="200"/>
+    <line x1="890" y1="180" x2="890" y2="200"/>
+  </g>
+
+  <!-- Branch headers -->
+  <g font-family="Inter" font-weight="700" font-size="12" fill="#1a1a1a">
+    <g filter="url(#bib-shadow)"><rect x="40" y="200" width="180" height="32" rx="7" fill="#fdeff1" stroke="#e9b5ba" stroke-width="1.2"/></g>
+    <text x="130" y="221" text-anchor="middle">pillars[2–7]</text>
+
+    <g filter="url(#bib-shadow)"><rect x="230" y="200" width="180" height="32" rx="7" fill="#fdeff1" stroke="#e9b5ba" stroke-width="1.2"/></g>
+    <text x="320" y="221" text-anchor="middle">exhibits[≤12]</text>
+
+    <g filter="url(#bib-shadow)"><rect x="420" y="200" width="180" height="32" rx="7" fill="#fdeff1" stroke="#e9b5ba" stroke-width="1.2"/></g>
+    <text x="510" y="221" text-anchor="middle">motif</text>
+
+    <g filter="url(#bib-shadow)"><rect x="610" y="200" width="180" height="32" rx="7" fill="#fdeff1" stroke="#e9b5ba" stroke-width="1.2"/></g>
+    <text x="700" y="221" text-anchor="middle">brand system</text>
+
+    <g filter="url(#bib-shadow)"><rect x="800" y="200" width="180" height="32" rx="7" fill="#fdeff1" stroke="#e9b5ba" stroke-width="1.2"/></g>
+    <text x="890" y="221" text-anchor="middle">scenes[2–8]</text>
+  </g>
+
+  <!-- Pillars column -->
+  <g font-family="Inter" font-size="10">
+    <g filter="url(#bib-shadow)">
+      <rect x="40" y="242" width="180" height="32" rx="5" fill="url(#bib-hero)" stroke="#e9b5ba"/>
+      <text x="52" y="256" font-weight="800" fill="#a80e37">HERO · w5 ★</text>
+      <text x="52" y="269" fill="#4a4a4a">p-zero-coinsurance</text>
+    </g>
+    <g filter="url(#bib-shadow)">
+      <rect x="40" y="280" width="180" height="32" rx="5" fill="url(#bib-hero)" stroke="#e9b5ba"/>
+      <text x="52" y="294" font-weight="800" fill="#a80e37">HERO · w5</text>
+      <text x="52" y="307" fill="#4a4a4a">p-lifetime</text>
+    </g>
+    <g filter="url(#bib-shadow)">
+      <rect x="40" y="318" width="180" height="32" rx="5" fill="url(#bib-sup)" stroke="#d0cec8"/>
+      <text x="52" y="332" font-weight="800" fill="#4a4a4a">SUPPORT · w4</text>
+      <text x="52" y="345" fill="#4a4a4a">p-2m-limit</text>
+    </g>
+    <g filter="url(#bib-shadow)">
+      <rect x="40" y="356" width="180" height="32" rx="5" fill="url(#bib-sup)" stroke="#d0cec8"/>
+      <text x="52" y="370" font-weight="800" fill="#4a4a4a">SUPPORT · w4</text>
+      <text x="52" y="383" fill="#4a4a4a">p-13mo</text>
+    </g>
+    <g filter="url(#bib-shadow)">
+      <rect x="40" y="394" width="180" height="32" rx="5" fill="#efece6" stroke="#d0cec8"/>
+      <text x="52" y="408" font-weight="800" fill="#6a6a6a">CONTEXT · w3</text>
+      <text x="52" y="421" fill="#4a4a4a">p-gap</text>
+    </g>
+  </g>
+
+  <!-- Exhibits column -->
+  <g font-family="Inter" font-size="10">
+    <g filter="url(#bib-shadow)">
+      <rect x="230" y="242" width="180" height="36" rx="5" fill="#ffffff" stroke="#d0cec8"/>
+      <text x="242" y="258" font-weight="700" fill="#1a1a1a">ex-stat-grid</text>
+      <text x="242" y="271" fill="#6a6a6a">stat_grid · 4 cells</text>
+    </g>
+    <g filter="url(#bib-shadow)">
+      <rect x="230" y="284" width="180" height="36" rx="5" fill="#ffffff" stroke="#d0cec8"/>
+      <text x="242" y="300" font-weight="700" fill="#1a1a1a">ex-timeline</text>
+      <text x="242" y="313" fill="#6a6a6a">timeline · 3 milestones</text>
+    </g>
+    <g filter="url(#bib-shadow)">
+      <rect x="230" y="326" width="180" height="36" rx="5" fill="#ffffff" stroke="#d0cec8"/>
+      <text x="242" y="342" font-weight="700" fill="#1a1a1a">ex-comparison</text>
+      <text x="242" y="355" fill="#6a6a6a">comparison_table · 3 cols</text>
+    </g>
+  </g>
+
+  <!-- Motif column -->
+  <g font-family="Inter" font-size="10">
+    <g filter="url(#bib-shadow)">
+      <rect x="420" y="242" width="180" height="108" rx="5" fill="#ffffff" stroke="#d0cec8"/>
+      <text x="432" y="258" font-weight="700" fill="#1a1a1a">m-shield-build</text>
+      <line x1="432" y1="266" x2="588" y2="266" stroke="#e4e2dd"/>
+      <text x="432" y="281" fill="#6a6a6a">scene 0 · 0% outline</text>
+      <text x="432" y="296" fill="#6a6a6a">scene 2 · 40% drawn</text>
+      <text x="432" y="311" fill="#6a6a6a">scene 4 · 80% visible</text>
+      <text x="432" y="326" fill="#6a6a6a">scene 6 · 100% lockup</text>
+      <text x="432" y="343" font-style="italic" fill="#d31145">recurring visual thread</text>
+    </g>
+  </g>
+
+  <!-- Brand system column -->
+  <g font-family="Inter" font-size="10">
+    <g filter="url(#bib-shadow)">
+      <rect x="610" y="242" width="180" height="108" rx="5" fill="#fcf6ec" stroke="#e8d4b5"/>
+      <text x="622" y="258" font-weight="700" fill="#1a1a1a">→ inject AIA block</text>
+      <line x1="622" y1="266" x2="778" y2="266" stroke="#e8d4b5"/>
+      <g fill="#4a4a4a">
+        <text x="622" y="281">palette ·</text>
+        <rect x="670" y="272" width="14" height="14" rx="2" fill="#D31145"/>
+        <rect x="686" y="272" width="14" height="14" rx="2" fill="#F5DDE0"/>
+        <rect x="702" y="272" width="14" height="14" rx="2" fill="#FAF4EE"/>
+        <rect x="718" y="272" width="14" height="14" rx="2" fill="#1A1A1A"/>
+        <rect x="734" y="272" width="14" height="14" rx="2" fill="#E86C29"/>
+
+        <text x="622" y="303">9 verified product facts</text>
+        <text x="622" y="318">first-aid cross, shield motif</text>
+        <text x="622" y="333">tagline: "Healthier, Longer,</text>
+        <text x="622" y="345" font-style="italic">Better Lives."</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- Scenes column -->
+  <g font-family="Inter" font-size="10">
+    <g filter="url(#bib-shadow)">
+      <rect x="800" y="242" width="180" height="106" rx="5" fill="#ffffff" stroke="#e9b5ba" stroke-width="1.4"/>
+      <text x="812" y="258" font-weight="800" fill="#a80e37">Scene #1 · hero-beat ★</text>
+      <line x1="812" y1="266" x2="968" y2="266" stroke="#f5dde0"/>
+      <text x="812" y="280" fill="#4a4a4a">tier=hero · 5.0s</text>
+      <text x="812" y="295" fill="#4a4a4a">carries: p-zero-coinsurance</text>
+      <text x="812" y="310" fill="#4a4a4a">         p-2m-limit</text>
+      <text x="812" y="325" fill="#4a4a4a">exhibit_ids: ex-stat-grid</text>
+      <text x="812" y="340" fill="#4a4a4a">copy_items: 4 entries</text>
+    </g>
+    <g filter="url(#bib-shadow)">
+      <rect x="800" y="354" width="180" height="28" rx="5" fill="#ffffff" stroke="#d0cec8"/>
+      <text x="812" y="372" fill="#1a1a1a">Scene #2 · proof-point</text>
+    </g>
+    <g filter="url(#bib-shadow)">
+      <rect x="800" y="388" width="180" height="28" rx="5" fill="#ffffff" stroke="#d0cec8"/>
+      <text x="812" y="406" fill="#1a1a1a">Scene #3 · evidence</text>
+    </g>
+    <g filter="url(#bib-shadow)">
+      <rect x="800" y="422" width="180" height="28" rx="5" fill="#ffffff" stroke="#d0cec8"/>
+      <text x="812" y="440" fill="#7a7a7a">Scene #4 · …</text>
+    </g>
+    <g filter="url(#bib-shadow)">
+      <rect x="800" y="456" width="180" height="28" rx="5" fill="#ffffff" stroke="#d0cec8"/>
+      <text x="812" y="474" fill="#1a1a1a">Scene #N · brand-lockup</text>
+    </g>
+  </g>
+
+  <!-- Cross-reference arrows: Scene #1 → 2 pillars + 1 exhibit -->
+  <!-- s1 → p-zero-coinsurance -->
+  <path d="M 800 295 C 600 295, 420 260, 220 258" fill="none" stroke="#d31145" stroke-width="1.4" stroke-dasharray="4 3" marker-end="url(#bib-x)" opacity="0.85"/>
+  <!-- s1 → p-2m-limit -->
+  <path d="M 800 310 C 550 310, 400 330, 220 332" fill="none" stroke="#d31145" stroke-width="1.4" stroke-dasharray="4 3" marker-end="url(#bib-x)" opacity="0.7"/>
+  <!-- s1 → ex-stat-grid -->
+  <path d="M 800 325 C 650 325, 520 280, 410 260" fill="none" stroke="#d31145" stroke-width="1.4" stroke-dasharray="4 3" marker-end="url(#bib-x)" opacity="0.85"/>
+
+  <!-- Invariants panel -->
+  <g filter="url(#bib-shadow)">
+    <rect x="40" y="498" width="940" height="80" rx="10" fill="#fafaf7" stroke="#e4e2dd"/>
+    <text x="60" y="524" font-family="Inter" font-weight="800" font-size="11" letter-spacing="0.12em" fill="#d31145">PYDANTIC INVARIANTS · validated before authoring starts · one-shot LLM retry on failure</text>
+    <g font-family="Inter" font-size="11" fill="#4a4a4a">
+      <text x="60" y="548">✓ every <tspan font-family="JetBrains Mono,monospace" fill="#1a1a1a">scene.carries</tspan> id exists in <tspan font-family="JetBrains Mono,monospace" fill="#1a1a1a">pillars</tspan></text>
+      <text x="60" y="566">✓ every <tspan font-family="JetBrains Mono,monospace" fill="#1a1a1a">scene.exhibit_ids</tspan> id exists in <tspan font-family="JetBrains Mono,monospace" fill="#1a1a1a">exhibits</tspan></text>
+      <text x="390" y="548">✓ every <tspan fill="#d31145" font-weight="700">hero-tier</tspan> pillar carried by ≥ 1 scene</text>
+      <text x="390" y="566">✓ scene indices contiguous from 0</text>
+      <text x="720" y="548">✓ ∑ scene.duration_s ≈ total (±0.5s)</text>
+      <text x="720" y="566">✓ ≥ 1 scene has <tspan font-family="JetBrains Mono,monospace" fill="#1a1a1a">is_anchor: true</tspan></text>
+    </g>
+  </g>
+</svg>
+<div class="caption">Figure 3 · An actual AIA Gold Max Story Bible. Red dashed arrows trace the cross-references from one scene into two pillars and one exhibit — the Pydantic validator enforces that every such reference resolves before authoring can start. The brand block and motif arc are the cross-cutting elements every downstream scene inherits.</div>
+</div>
+</section>
+
+<section id="exhibits">
+<h2><span class="n">§6</span>Data exhibits</h2>
+
+<p>Exhibits are first-class typed data objects. The bible declares them; the LLM author renders them via a structured rendering vocabulary embedded in the author prompt. A scene references one or more by id.</p>
+
+<div class="two-col">
+  <div class="card">
+    <h4>stat_grid</h4>
+    <p>3–6 cells of <code>{value, label, chip?}</code>. Rendered as a CSS grid of rounded cards, each with staggered entry and its own ambient breathing motion.</p>
+  </div>
+  <div class="card">
+    <h4>comparison_table</h4>
+    <p>N columns × M rows with a <code>highlight_column</code>. Rendered as CSS grid; the highlighted column gets a tinted background and a winner chip.</p>
+  </div>
+  <div class="card">
+    <h4>line_curve</h4>
+    <p>SVG path with <code>stroke-dasharray</code> draw-in animation (Catmull-Rom → cubic Bézier), optional area-fill gradient, milestone dots, axis labels. The "sophisticated curve" rendering primitive.</p>
+  </div>
+  <div class="card">
+    <h4>bar_chart</h4>
+    <p>Vertical or horizontal bars with <code>scaleY</code>/<code>scaleX</code> stagger entry. Value labels count up via <code>gsap.onUpdate</code>.</p>
+  </div>
+  <div class="card">
+    <h4>checklist</h4>
+    <p>4–6 rows of (SVG checkmark + text). Ticks stroke-draw, text slides in from right.</p>
+  </div>
+  <div class="card">
+    <h4>timeline</h4>
+    <p>Horizontal line + milestone dots. Line scales left-to-right, dots pop with <code>back.out(1.8)</code>, labels fade alternating above/below.</p>
+  </div>
+</div>
+
+<p>Each exhibit type has 4–8 rendering instructions in the author prompt covering CSS structure, GSAP pattern, and the "don't pack everything into 0.3s" timing discipline.</p>
+</section>
+
+<section id="brand">
+<h2><span class="n">§7</span>Brand system injection</h2>
+
+<p>When the user's style seed or situation contains a known brand keyword, the matching <strong>brand system block</strong> is appended to both the Story Bible system prompt and the author system prompt. The block ships verbatim — no paraphrasing — so the LLM sees exact HEX codes, typographic direction, motifs, tagline, and verified product facts.</p>
+
+<p>Current brand: <code>aia</code> — palette (<code>#D31145</code> primary, <code>#F5DDE0</code> card, <code>#FAF4EE</code> bg, <code>#1A1A1A</code> ink, <code>#E86C29</code> callout), tagline ("Healthier, Longer, Better Lives."), motifs (first-aid cross, shield, heart+cross, ribbon badge), and 9 verified product facts (S$2M limit, 13-month pre/post, 380+ AQHP specialists, deductible-waiver pass, etc.).</p>
+
+<p>Adding a new brand is a single entry in <code>_BRAND_SYSTEMS</code> — no pipeline changes needed.</p>
+</section>
+
+<section id="seams">
+<h2><span class="n">§8</span>Scene-to-scene seams</h2>
+
+<p>The bible declares an <code>entry_motif</code> and <code>exit_motif</code> per scene (short text descriptions). The author prompt for scene N receives:</p>
+
+<ul>
+  <li><code>prev_scene.exit_motif</code> — the motion the previous scene ends on</li>
+  <li><code>this.entry_motif</code> — what this scene should start with (should match or intentionally contrast prev)</li>
+  <li><code>this.exit_motif</code> — the motion this scene should end on</li>
+  <li><code>next_scene.entry_motif</code> — the handoff the next scene expects</li>
+</ul>
+
+<p>This is how the film reads as <em>directed</em> rather than a slideshow. A <code>light-sweep-right</code> exit in scene 2 → <code>light-sweep-right</code> entry in scene 3 produces a visual baton-pass. The motif arc gives the viewer a through-line: a shield emblem that progresses from outline to complete across scenes 2 → 5.</p>
+</section>
+
+<section id="motion">
+<h2><span class="n">§9</span>Motion vocabulary</h2>
+
+<p>A ~40-item menu embedded in the author prompt, organized in 5 categories:</p>
+
+<ul>
+  <li><strong>Typography</strong> — char-mask reveal, word stagger with blur, variable-weight swell, kerning collapse, split-flap flip, outline-to-fill, gradient-text-fill sweep, tracking pulse, stacked typography, kinetic number, word-replacement cascade.</li>
+  <li><strong>Reveals &amp; masking</strong> — clip-path horizontal wipe, vertical blind, radial iris, light sweep, spotlight tracker, ink-stamp SVG reveal, diagonal band wipe.</li>
+  <li><strong>Atmospheric layers</strong> (scene needs ≥3) — feTurbulence grain, radial gradient orbs, backdrop-filter blur pull, depth-of-field rack, vignette breathe, scanlines, particle dot grid, mist/haze, light rays, chromatic aberration, film-burn flicker, noise mesh overlay.</li>
+  <li><strong>Structural &amp; 3D</strong> — camera push (always), parallax split, 3D perspective tilt, camera dolly, Z-axis depth stack, orbit motion, accent bar draw, SVG stroke-draw, geometric wipe transition.</li>
+  <li><strong>Signature / hero moments</strong> — shield assembly, logo lockup, stat-card cascade, ripple pulse, typewriter cascade, bar-chart rise, timeline draw, spotlight reveal, icon morph-swap, mass particle explosion, hero word swap, ink wash.</li>
+</ul>
+
+<p>The prompt demands ≥ 6 techniques across ≥ 3 categories per scene, with exactly 1 signature move.</p>
+</section>
+
+<section id="casestudy">
+<h2><span class="n">§10</span>Case study — AIA Gold Max</h2>
+
+<p><strong>Situation:</strong> "30-second AIA Health Shield Gold Max brand film — walk viewers end-to-end through the plan: what MediShield Life alone leaves exposed, how Gold Max covers private hospitals, Max VitalHealth eliminating co-insurance, the S$2 million annual limit, 13 months pre/post coverage, 380+ AQHP specialists, and the guaranteed lifetime coverage — ending on the AIA promise Healthier, Longer, Better Lives."</p>
+
+<h3>Bible produced</h3>
+
+<div class="card">
+<p><strong>Thesis:</strong> "AIA Health Shield Gold Max provides complete, lifetime health coverage where basic plans leave you exposed."</p>
+<p><strong>Pillars (7):</strong></p>
+<ul>
+  <li><span class="chip">CONTEXT · w3</span> p-gap — "MediShield Life has coverage gaps"</li>
+  <li><span class="chip" style="background:#f5dde0;color:#d31145">HERO · w5 · ★</span> p-complete-coverage — "comprehensive private hospital coverage"</li>
+  <li><span class="chip" style="background:#f5dde0;color:#d31145">HERO · w5</span> p-zero-cost — "Max VitalHealth zero out-of-pocket"</li>
+  <li><span class="chip">SUPPORT · w4</span> p-financial-power — "S$2M annual limit"</li>
+  <li><span class="chip">SUPPORT · w4</span> p-timeline — "13 months pre/post"</li>
+  <li><span class="chip">SUPPORT · w3</span> p-access — "380+ AQHP specialists"</li>
+  <li><span class="chip" style="background:#f5dde0;color:#d31145">HERO · w5</span> p-lifetime — "guaranteed lifetime"</li>
+</ul>
+<p><strong>Scene arc:</strong> hook → hero-beat (★) → proof-point → evidence → proof-point → resolution → brand-lockup</p>
+<p><strong>Motif:</strong> <code>m-shield-build</code> — "A central shield icon evolves from a basic outline to a multi-layered, fully-featured emblem of protection, mirroring the build-up of coverage."</p>
+</div>
+
+<h3>Quality progression across revisions</h3>
+
+<table>
+<thead><tr><th>Revision</th><th>Architecture change</th><th>Scene densities (tweens per scene)</th><th>Observable quality</th></tr></thead>
+<tbody>
+<tr><td>v4</td><td>Director only · 3-pass author · no bible</td><td>22, 18, 16, 20, <strong>2</strong>, <strong>1</strong></td><td>Last 2 scenes collapsed to Python native template (1 opacity fade each). Film felt truncated.</td></tr>
+<tr><td>v5</td><td>+ Story Bible · + rich-safe fallback</td><td>18, 14, 14, 23, 28, 21, 21</td><td>Every scene substantive. 2 scenes used rich-safe after LLM tripped lint. Narrative arc visible.</td></tr>
+<tr><td>v6</td><td>+ track-overlap + template-literal validators</td><td>19, 20, 21, 22, 20, 21, 13</td><td>0 fallbacks, 0 hyperframes lint errors. But scenes 3/4 rendered as blank cream — <code>.clip {…}</code> CSS bug.</td></tr>
+<tr><td>v7</td><td>+ <code>.clip</code> CSS rule validator</td><td>20, 22, 12, 14, 18, 19, 22</td><td>Scenes 3/4 now render content. Scene 5 showed clipped ribbon text.</td></tr>
+<tr><td>v8</td><td>+ SVG <code>&lt;text&gt;</code> length validator</td><td>LLM sidestepped by using HTML <code>&lt;div class="ribbon-text"&gt;</code></td><td>Still clipped.</td></tr>
+<tr><td>v9</td><td>+ HTML shape-label validator (regex had nesting bug — missed inner divs)</td><td>—</td><td>Caught on visual inspection.</td></tr>
+<tr><td>v10</td><td>Rewrote shape-label regex · + full-bleed exit-panel validator · + symmetric-column rule</td><td>All scenes substantive · 2 triggered rich-safe fallback · 0 lint errors · 15 MB MP4</td><td>Ships clean. Demo-ready.</td></tr>
+</tbody>
+</table>
+
+<p>Each failure mode the user caught on screen became a new validator rule — the system learns by accretion.</p>
+</section>
+
+<section id="cost">
+<h2><span class="n">§11</span>Cost &amp; latency</h2>
+
+<div class="two-col">
+  <div class="card">
+    <h4>Per-run cost (30-second film, 7 scenes, Gemini 2.5 Pro)</h4>
+    <table>
+      <tr><td>Story Bible pass</td><td>~$0.015</td></tr>
+      <tr><td>Per-scene author (3-pass × 7)</td><td>~$0.07</td></tr>
+      <tr><td>Elevation passes (× 7)</td><td>~$0.02</td></tr>
+      <tr><td>Retry overhead (~20% scenes)</td><td>~$0.015</td></tr>
+      <tr><td><strong>Total</strong></td><td><strong>~$0.10–0.15</strong></td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Per-run latency</h4>
+    <table>
+      <tr><td>Bible (1 LLM + retry overhead)</td><td>~20s</td></tr>
+      <tr><td>7 × 3-pass author</td><td>~6 min</td></tr>
+      <tr><td>Hyperframes render (960 frames, 6 workers)</td><td>~3 min</td></tr>
+      <tr><td>Lint + repair</td><td>~5s</td></tr>
+      <tr><td><strong>Total</strong></td><td><strong>~9–12 min</strong></td></tr>
+    </table>
+  </div>
+</div>
+
+<p>Caching: the bible is persisted to <code>.framecraft/story-bible.json</code> and each authored scene's HTML is written back to <code>plan.json</code> as <code>scene.polished.html</code>. <code>framecraft from-plan &lt;plan.json&gt;</code> re-renders with zero LLM calls — useful for tweaking copy or re-rendering at different quality.</p>
+
+<p>With <code>--n-variants 5</code>, the bible is reused across variants and only the per-scene authoring repeats — so 5 variants cost ~4× a single run, not 5×.</p>
+</section>
+
+<section id="stack">
+<h2><span class="n">§12</span>Tech stack</h2>
+
+<div class="two-col">
+  <div>
+    <h4>Python side</h4>
+    <ul>
+      <li>Python 3.11 / 3.12</li>
+      <li><strong>pydantic v2</strong> — schema + validation (bible, scene graph, copy entries)</li>
+      <li><strong>typer</strong> + <strong>rich</strong> — CLI</li>
+      <li><strong>google-genai</strong> — Vertex AI Gemini (with service-account auth)</li>
+      <li><strong>anthropic</strong> — Claude SDK (alternate provider)</li>
+      <li><strong>jinja2</strong> — native-block templates</li>
+      <li><strong>beautifulsoup4</strong> — HTML parsing for lint repair</li>
+      <li><strong>pyyaml</strong> — <code>framecraft.yaml</code> project config</li>
+      <li>pytest + pytest-recording — tests, including recorded-LLM fixtures</li>
+    </ul>
+  </div>
+  <div>
+    <h4>Node side (via npx)</h4>
+    <ul>
+      <li><strong>Hyperframes</strong> — composition / capture / render engine</li>
+      <li><strong>GSAP 3.14</strong> — animation (loaded from CDN inside each scene)</li>
+      <li><strong>Chromium</strong> (headless, via Hyperframes) — frame capture</li>
+      <li><strong>ffmpeg</strong> — MP4 mux</li>
+    </ul>
+  </div>
+</div>
+
+<p><strong>Determinism contract:</strong> everything the LLM writes must be reproducible given the same input. No real-time clock, no RNG, no network, no non-deterministic fonts. Violations are rejected by the validator.</p>
+</section>
+
+<section id="roadmap">
+<h2><span class="n">§13</span>Roadmap</h2>
+
+<div class="two-col">
+  <div class="card accent">
+    <h4>Near-term (next 1–2 weeks)</h4>
+    <ul>
+      <li>Golden-test coverage across the new validator rules</li>
+      <li>Few-shot exemplar in the author prompt (will push density another ~30%)</li>
+      <li>Caption/audio pipeline: TTS → word-level timing → karaoke caption layer</li>
+      <li>Second brand kit (e.g. a fintech example) as proof the brand-injection system scales</li>
+    </ul>
+  </div>
+  <div class="card accent">
+    <h4>Medium-term</h4>
+    <ul>
+      <li>9:16 vertical reel format hardening (currently 16:9 is primary)</li>
+      <li>Live preview server hot-reload on bible / plan edits</li>
+      <li>Multi-provider author (Claude for certain scene types)</li>
+      <li>Designer handoff mode: export plan.json + bible to a Figma plugin for human polish</li>
+    </ul>
+  </div>
+</div>
+</section>
+
+<section id="code">
+<h2><span class="n">§14</span>Code map</h2>
+
+<pre><code>framecraft/
+├── pyproject.toml
+├── requirements.txt · requirements-dev.txt
+├── key.json                              ← service account (gitignored)
+├── README.md
+├── docs/
+│   └── framecraft-overview.html          ← this document
+├── src/framecraft/
+│   ├── cli.py                            ← typer entrypoint
+│   ├── cli_compose.py                    ← orchestrates the full pipeline
+│   ├── cli_from_plan.py
+│   ├── cli_render.py · cli_preview.py · cli_doctor.py · cli_catalog.py
+│   ├── schema.py                         ← pydantic models (StoryBible, SceneGraph, Brief, Exhibit, …)
+│   ├── story_bible.py                    ← bible generation + bible_to_plan()
+│   ├── director.py                       ← legacy LLM planner (bypassed under --full-polish)
+│   ├── assembler.py                      ← writes compositions, runs validator chain
+│   ├── rendering/
+│   │   ├── llm_author.py                 ← 3-pass LLM authoring + validator (14 rules)
+│   │   ├── rich_fallback.py              ← deterministic fallback HTML
+│   │   ├── catalog.py · native.py
+│   │   └── root.py · audio.py · ids.py
+│   ├── blocks/                           ← legacy native-Python templates (title_card, lower_third, …)
+│   ├── prompts/                          ← primer.md, provider-framing snippets
+│   ├── providers/                        ← gemini.py (Vertex + Developer), anthropic.py, stub.py
+│   ├── registry.py · brand.py · config.py
+│   ├── lint.py · lint_policy.py
+│   ├── music.py · scaffold.py · exit_codes.py
+│   └── trace.py · trace_rates.py · observability.py
+├── tests/                                ← unit + golden + LLM-marked
+└── scripts/
+    ├── record_fixture.py                 ← records a real LLM response as a stub fixture
+    └── perf_harness.py
+</code></pre>
+
+<p>Call graph highlights:</p>
+<ul>
+  <li><code>cli_compose.compose()</code> → <code>build_bible()</code> → <code>bible_to_plan()</code> → <code>Assembler.assemble()</code></li>
+  <li><code>Assembler._render_native()</code> → <code>author_scene_html()</code> → validator → (rich_fallback on second failure)</li>
+  <li><code>author_scene_html()</code> chains: <code>_BRIEF_USER</code> → <code>_AUTHOR_USER</code> → <code>_ELEVATE_USER</code>, all receiving <code>_format_bible_context()</code></li>
+</ul>
+</section>
+
+<footer>
+  FrameCraft technology overview · prepared for internal demo · sources in <code>src/framecraft/*</code>
+</footer>
+
+</main>
+</div>
+</body>
+</html>
